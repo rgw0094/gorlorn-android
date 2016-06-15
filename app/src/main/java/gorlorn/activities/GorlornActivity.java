@@ -24,6 +24,7 @@ import gorlorn.Framework.GameLoopActivity;
 import gorlorn.Framework.GameLoopView;
 import gorlorn.HeartManager;
 import gorlorn.UI.Background;
+import gorlorn.UI.DeathScreen;
 import gorlorn.UI.HUD;
 
 /**
@@ -37,6 +38,7 @@ public class GorlornActivity extends GameLoopActivity
 
     private boolean _isInitialized;
     private Background _background;
+    private DeathScreen _deathScreen;
 
     //endregion
 
@@ -92,13 +94,19 @@ public class GorlornActivity extends GameLoopActivity
             Initialize();
             _isInitialized = true;
         }
-
-        _background.update(dt);
-        EnemyManager.update(dt);
-        BulletManager.update(dt);
-        Hero.update(dt);
-        Hud.update(dt);
-        HeartManager.update(dt);
+        else if (_deathScreen != null)
+        {
+            _deathScreen.update(dt);
+        }
+        else
+        {
+            _background.update(dt);
+            EnemyManager.update(dt);
+            BulletManager.update(dt);
+            Hero.update(dt);
+            Hud.update(dt);
+            HeartManager.update(dt);
+        }
     }
 
     @Override
@@ -116,6 +124,11 @@ public class GorlornActivity extends GameLoopActivity
         Hud.draw(canvas);
         Hero.draw(canvas);
         HeartManager.draw(canvas);
+
+        if (_deathScreen != null)
+        {
+            _deathScreen.draw(canvas);
+        }
     }
 
     @Override
@@ -124,7 +137,7 @@ public class GorlornActivity extends GameLoopActivity
         StringWriter sw = new StringWriter();
         PrintWriter pw = new PrintWriter(sw);
         e.printStackTrace(pw);
-        String stackTrace = sw.toString(); // stack trace as a strings
+        String stackTrace = sw.toString();
     }
 
     @Override
@@ -136,6 +149,15 @@ public class GorlornActivity extends GameLoopActivity
     //endregion
 
     //region Public Methods
+
+    /**
+     * Immediately ends gameplay and transitions to the death screen.
+     */
+    public void showDeathScreen()
+    {
+        _deathScreen = new DeathScreen(this);
+        _deathScreen.show();
+    }
 
     /**
      * Creates a bitmap sized as a percentage of the screen.

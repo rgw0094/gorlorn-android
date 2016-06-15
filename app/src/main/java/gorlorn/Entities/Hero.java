@@ -17,6 +17,7 @@ public class Hero extends Entity
     private long _lastShotFiredMs;
     private float _healthPercent = 1.0f;
 
+
     /**
      * Constructs a new Hero.
      *
@@ -35,13 +36,19 @@ public class Hero extends Entity
 
     public void dealDamage(float damagePercent)
     {
+        //The hero is invincible while recovering from previous damage!
+        if (getIsBlinking())
+            return;
+
         _healthPercent = Math.max(0.0f, _healthPercent - damagePercent);
 
-        //TODO: blink and stuff
+        //Start blinking!
+        startBlinking(Constants.PlayerBlinksOnHitMs);
 
         if (_healthPercent <= 0.0f)
         {
-            //TODO: die!!!
+            _healthPercent = 0.0f;
+            _gorlornActivity.showDeathScreen();
         }
     }
 
