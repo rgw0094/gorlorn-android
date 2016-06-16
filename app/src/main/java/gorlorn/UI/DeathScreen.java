@@ -1,14 +1,17 @@
 package gorlorn.UI;
 
+import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.ColorFilter;
 import android.graphics.LightingColorFilter;
 import android.graphics.Paint;
+import android.graphics.Rect;
 
 import java.util.Date;
 
 import gorlorn.activities.GorlornActivity;
+import gorlorn.activities.R;
 
 /**
  * The screen and effect that is displayed when the hero dies.
@@ -34,7 +37,7 @@ public class DeathScreen
     private Phase _currentPhase;
     private Paint _textPaint;
     private Paint _heroPaint = new Paint();
-    private Paint _tryAgainPaint = new Paint();
+    private Button _tryAgainButton;
 
     public DeathScreen(GorlornActivity gorlorn)
     {
@@ -49,12 +52,7 @@ public class DeathScreen
         _textPaint.setAntiAlias(true);
         _textPaint.setTextSize(200);
 
-        _tryAgainPaint = new Paint();
-        _tryAgainPaint.setARGB(255, 255, 255, 255);
-        _tryAgainPaint.setStyle(Paint.Style.FILL);
-        _tryAgainPaint.setTextAlign(Paint.Align.CENTER);
-        _tryAgainPaint.setAntiAlias(true);
-        _tryAgainPaint.setTextSize(80);
+        _tryAgainButton = new Button(gorlorn, R.drawable.tryagain, 0.35f, 0.35f / 4.25f, gorlorn.getXFromPercent(0.78f), gorlorn.getYFromPercent(0.9f));
     }
 
     public void show()
@@ -87,6 +85,14 @@ public class DeathScreen
                 enterPhase(Phase.Done);
             }
         }
+        else if (_currentPhase == Phase.Done)
+        {
+            _tryAgainButton.update();
+            if (_tryAgainButton.isClicked())
+            {
+                _gorlorn.newGame();
+            }
+        }
     }
 
     public void draw(Canvas canvas)
@@ -116,7 +122,7 @@ public class DeathScreen
             canvas.drawText("YOU HAVE DIED", _gorlorn.getXFromPercent(0.5f), _gorlorn.getYFromPercent(0.5f), _textPaint);
             if (_currentPhase == Phase.Done)
             {
-                canvas.drawText("Try Again >>", _gorlorn.getXFromPercent(0.8f), _gorlorn.getYFromPercent(0.9f), _tryAgainPaint);
+                _tryAgainButton.draw(canvas);
             }
         }
     }

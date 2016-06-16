@@ -30,8 +30,8 @@ public class HUD
     private Bitmap _leftButtonSprite;
     private Bitmap _rightButtonSprite;
     private HealthBar _healthBar;
+    private HealthBar _energyBar;
     private LinkedList<Points> _points = new LinkedList<>();
-    private long _score = 0;
     private Paint _scorePaint;
     private int _numPointersDown = 0;
 
@@ -44,6 +44,10 @@ public class HUD
     private boolean _isLeftPressed;
     private boolean _isRightPressed;
     private boolean _isFirePressed;
+    private boolean _isPointerDown;
+    private boolean _isClicked;
+    private int _clickX;
+    private int _clickY;
 
     /**
      * Constructs a new HUD (Heads up display). This user interface includes the movement and fire button,
@@ -80,7 +84,26 @@ public class HUD
 
         int healthBarLength = _gorlornActivity.getXFromPercent(Constants.HealthBarLength);
         int healthBarThickness = _gorlornActivity.getYFromPercent(Constants.HealthBarThickness);
-        _healthBar = new HealthBar(Orientation.Horizontal, _gorlornActivity.getXFromPercent(0.99f) - healthBarLength, _gorlornActivity.getYFromPercent(0.01f), healthBarThickness, healthBarLength);
+
+        Paint healthPaint = new Paint();
+        healthPaint.setARGB(255, 255, 0, 0);
+        _healthBar = new HealthBar(
+                Orientation.Horizontal,
+                _gorlornActivity.getXFromPercent(0.99f) - healthBarLength,
+                _gorlornActivity.getYFromPercent(0.01f), healthBarThickness,
+                healthBarLength,
+                healthPaint);
+
+        Paint energyPaint = new Paint();
+        energyPaint.setARGB(255, 0, 224, 216);
+
+        _energyBar = new HealthBar(
+                Orientation.Horizontal,
+                _gorlornActivity.getXFromPercent(0.99f) - healthBarLength,
+                _gorlornActivity.getYFromPercent(0.02f) + healthBarThickness,
+                healthBarThickness,
+                healthBarLength,
+                energyPaint);
     }
 
     /**
@@ -107,6 +130,35 @@ public class HUD
         return _isFirePressed;
     }
 
+    /*
+     * Whether or not a "click" happened this frame - the user touched the screen at a single point where
+     * they weren't touching last frame.
+     */
+    public boolean isClicked()
+    {
+        return _isClicked;
+    }
+
+    /**
+     * If isClicked() is true, gets the x coordinate of the click event.
+     *
+     * @return
+     */
+    public int getClickX()
+    {
+        return _clickX;
+    }
+
+    /**
+     * If isClicked() is true, gets the y coordinate of the click event.
+     *
+     * @return
+     */
+    public int getClickY()
+    {
+        return _clickY;
+    }
+
     /**
      * Handles touch events.
      *
@@ -114,6 +166,9 @@ public class HUD
      */
     public void handleTouchEvent(MotionEvent me)
     {
+        if (_isClicked)
+            _isClicked = false;
+
         int index = me.getActionIndex();
         int x = (int) me.getX(index);
         int y = (int) me.getY(index);
@@ -133,6 +188,14 @@ public class HUD
                     _isFirePressed = true;
                 }
                 _numPointersDown++;
+
+                if (_numPointersDown == 1 && !_isPointerDown)
+                {
+                    _isClicked = true;
+                    _clickX = x;
+                    _clickY = y;
+                }
+
                 break;
 
             case MotionEvent.ACTION_UP:
@@ -172,6 +235,8 @@ public class HUD
             }
         }
 
+        _isPointerDown = _numPointersDown == 1;
+
         //Extra check for multi-touch wackiness
         if (_numPointersDown == 0)
         {
@@ -192,7 +257,7 @@ public class HUD
     public void addPoints(float x, float y, int chainCount)
     {
         long points = (long) Math.pow(2, chainCount);
-        _score += points;
+        _gorlornActivity.Score += points;
 
         _points.add(new Points(_gorlornActivity, points, x, y));
     }
@@ -221,7 +286,7 @@ public class HUD
      */
     public void draw(Canvas canvas)
     {
-        canvas.drawText(MessageFormat.format("{0}", _score), 10, 50, _scorePaint);
+        canvas.drawText(MessageFormat.format("{0}", _gorlornActivity.Score), 10, 50, _scorePaint);
 
         drawButton(canvas, _leftButtonSprite, _leftButtonHitBox);
         drawButton(canvas, _rightButtonSprite, _rightButtonHitBox);
@@ -241,6 +306,7 @@ public class HUD
         }
 
         _healthBar.draw(canvas, _gorlornActivity.Hero.getHealthPercent());
+        _energyBar.draw(canvas, _gorlornActivity.Hero.getEnergyPercent());
     }
 
     /**

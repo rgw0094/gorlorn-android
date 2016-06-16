@@ -63,7 +63,7 @@ public class BulletManager
                 for (int i = 0; i < 3; i++)
                 {
                     double angle = _gorlornActivity.Random.nextDouble() * Math.PI * 2.0;
-                    newBullets.add(new Bullet(_gorlornActivity, _projectileSprite, killedEnemy.X, killedEnemy.Y, _speed, angle, bullet.ChainCount + 1, 250));
+                    newBullets.add(new Bullet(_gorlornActivity, _projectileSprite, killedEnemy.X, killedEnemy.Y, _speed, angle, bullet.ChainCount + 1, Constants.ChainBulletLifeTimeMs));
                 }
             }
         }

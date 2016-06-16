@@ -16,6 +16,7 @@ public class Hero extends Entity
     private float _speed;
     private long _lastShotFiredMs;
     private float _healthPercent = 1.0f;
+    private float _energyPercent = 1.0f;
 
 
     /**
@@ -67,6 +68,11 @@ public class Hero extends Entity
         return _healthPercent;
     }
 
+    public float getEnergyPercent()
+    {
+        return _energyPercent;
+    }
+
     @Override
     public boolean update(float dt)
     {
@@ -88,12 +94,18 @@ public class Hero extends Entity
         //Keep the hero within the game area
         X = Math.min(Math.max(X, _gorlornActivity.GameArea.left + Width * 0.5f), _gorlornActivity.GameArea.right - (Width * 0.5f));
 
-        long now = new Date().getTime();
-        if (_gorlornActivity.Hud.isFirePressed() && now - _lastShotFiredMs > Constants.MinShotIntervalMs)
+        if (_energyPercent >= Constants.EnergyPerShot)
         {
-            _lastShotFiredMs = now;
-            _gorlornActivity.BulletManager.FireBullet(X, Y, Math.PI * 1.5);
+            long now = new Date().getTime();
+            if (_gorlornActivity.Hud.isFirePressed() && now - _lastShotFiredMs > Constants.MinShotIntervalMs)
+            {
+                _lastShotFiredMs = now;
+                _gorlornActivity.BulletManager.FireBullet(X, Y, Math.PI * 1.5);
+                _energyPercent -= Constants.EnergyPerShot;
+            }
         }
+
+        _energyPercent = Math.min(1.0f, _energyPercent + (Constants.EnergyRegen * dt));
 
         return false;
     }

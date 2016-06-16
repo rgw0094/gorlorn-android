@@ -22,10 +22,12 @@ public class EnemyManager
     private Bitmap _enemySprite;
     private long _timeLastEnemySpawnedMs;
     private long _enemySpawnIntervalMs = Constants.StartingEnemySpawnIntervalMs;
+    private float _enemySpeed;
 
     public EnemyManager(GorlornActivity gorlornActivity)
     {
         _gorlornActivity = gorlornActivity;
+        _enemySpeed = Constants.EnemySpeed;
         _enemies = new LinkedList<>();
         _enemySprite = gorlornActivity.createBitmapByWidthPercent(R.drawable.enemy, Constants.EnemyDiameter);
     }
@@ -100,7 +102,7 @@ public class EnemyManager
         Random random = new Random();
 
         double angle = Math.PI * 0.25 + random.nextDouble() * Math.PI * 0.5;
-        float speed = ((_gorlornActivity.ScreenWidth + _gorlornActivity.ScreenHeight) / 2.0f) * Constants.EnemySpeed;
+        float speed = ((_gorlornActivity.ScreenWidth + _gorlornActivity.ScreenHeight) / 2.0f) * _enemySpeed;
         float minX = _gorlornActivity.GameArea.left + _gorlornActivity.GameArea.width() * 0.2f;
 
         Enemy newEnemy = new Enemy(_gorlornActivity, _enemySprite);
@@ -111,5 +113,6 @@ public class EnemyManager
 
         _enemies.add(newEnemy);
         _enemySpawnIntervalMs *= Constants.EnemySpawnRateAcceleration;
+        _enemySpeed *= Constants.EnemySpeedMultiplier;
     }
 }

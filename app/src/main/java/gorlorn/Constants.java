@@ -17,13 +17,14 @@ public class Constants
 
     //UI Elements
     public static float ButtonDiameter = 0.1f;
-    public static float HealthBarLength = 0.2f;
-    public static float HealthBarThickness = 0.04f;
+    public static float HealthBarLength = 0.35f;
+    public static float HealthBarThickness = 0.06f;
 
     //endregion
 
     //Speeds
-    public static float EnemySpeed = 0.65f;
+    public static float EnemySpeed = 0.65f;             //Percent of the screen traversed per second
+    public static float EnemySpeedMultiplier = 1.001f;  //Each new enemy is this much faster than the last
     public static float HeroSpeed = 0.9f;
     public static float BulletSpeed = 0.8f;
     public static float HeartSpeed = 0.2f;
@@ -38,8 +39,11 @@ public class Constants
     public static float EnemySpawnRateAcceleration = 0.995f;
     public static float EnemyDamage = 0.2f;
     public static float HeartHealthRestore = 0.2f;
-    public static long MinShotIntervalMs = 225;
+    public static long MinShotIntervalMs = 175;
     public static int StartingChainCountToSpawnHeart = 4;
+
+    public static float EnergyPerShot = 0.18f;   //Percent of energy consumed per shot
+    public static float EnergyRegen = 0.55f;     //Percent of energy regenerated per second
 
     //endregion
 }

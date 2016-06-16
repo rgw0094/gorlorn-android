@@ -53,6 +53,7 @@ public class GorlornActivity extends GameLoopActivity
     public int ScreenWidth;
     public int ScreenHeight;
     public boolean IsDebugMode = true;
+    public long Score = 0;
 
     /**
      * Bounds of the game area where the hero, enemies, bullets, etc. can move.
@@ -160,6 +161,15 @@ public class GorlornActivity extends GameLoopActivity
     }
 
     /**
+     * Starts a new game.
+     */
+    public void newGame()
+    {
+        _deathScreen = null;
+        Initialize();
+    }
+
+    /**
      * Creates a bitmap sized as a percentage of the screen.
      *
      * @param id
@@ -226,11 +236,13 @@ public class GorlornActivity extends GameLoopActivity
 
     private void Initialize()
     {
+        Score = 0;
         GameArea = new Rect(0, 0, ScreenWidth, ScreenHeight);
 
         _background = new Background(this);
         Hero = new Hero(this);
-        Hud = new HUD(this);
+        if (Hud == null) //Don't re-initialize the HUD since it will mess up the input logic
+            Hud = new HUD(this);
         EnemyManager = new EnemyManager(this);
         BulletManager = new BulletManager(this);
         HeartManager = new HeartManager(this);

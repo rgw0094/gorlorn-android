@@ -1,25 +1,23 @@
 package gorlorn.UI;
 
-import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.Paint;
 
 import gorlorn.activities.GorlornActivity;
-import gorlorn.activities.R;
 
 /**
- * The beautiful parallax background behind the gorlorn game area
+ * Renders the background of the gameplay area
  * <p/>
  * Created by Rob on 1/19/2016.
  */
 public class Background
 {
-    private Bitmap _cloudLayerSprite;
-    private Bitmap _mountainLayerSprite;
-    private float _cloudXOffset;
-    private float _mountainXOffset;
-    private float _cloudSpeed;
-    private float _mountainSpeed;
-    private float _mountainYOffset;
+    private static int NumPoints = 10;
+
+    private GorlornActivity _gorlorn;
+    private Paint _linePaint;
+    private Paint _backgroundPaint;
+    private float[] _horizontalLineStarts = new float[NumPoints];
 
     /**
      * Constructs a new Background.
@@ -28,17 +26,17 @@ public class Background
      */
     public Background(GorlornActivity gorlornActivity)
     {
-        int width = (int) ((float) gorlornActivity.GameArea.height() * (1024.0f / 768.0f));
-        int height = gorlornActivity.GameArea.height();
+        _gorlorn = gorlornActivity;
+        _linePaint = new Paint();
+        _linePaint.setARGB(255, 247, 33, 155);
+        _linePaint.setStrokeWidth(_gorlorn.getYFromPercent(0.005f));
+        _backgroundPaint = new Paint();
+        _backgroundPaint.setARGB(255, 24, 20, 37);
 
-        _cloudLayerSprite = gorlornActivity.createBitmap(R.drawable.clouds, width, height);
-        _mountainLayerSprite = gorlornActivity.createBitmap(R.drawable.mountains, width, height);
-
-        _cloudSpeed = (float) gorlornActivity.GameArea.width() * 0.1f;
-        _mountainSpeed = (float) gorlornActivity.GameArea.width() * 0.15f;
-
-        _cloudXOffset = _mountainXOffset = gorlornActivity.GameArea.left;
-        _mountainYOffset = gorlornActivity.getYFromPercent(0.2f);
+        for (int i = 0; i < NumPoints; i++)
+        {
+            _horizontalLineStarts[i] = gorlornActivity.getXFromPercent((1.0f / (float) NumPoints) * (float) i);
+        }
     }
 
     /**
@@ -48,13 +46,13 @@ public class Background
      */
     public void update(float dt)
     {
-        _cloudXOffset += (_cloudSpeed * dt);
-        if (_cloudXOffset >= _cloudLayerSprite.getWidth())
-            _cloudXOffset = 0.0f;
+        float width = _gorlorn.ScreenWidth;
+        float speed = width * 0.1f;
 
-        _mountainXOffset += (_mountainSpeed * dt);
-        if (_mountainXOffset >= _mountainLayerSprite.getWidth())
-            _mountainXOffset = 0.0f;
+        for (int i = 0; i < NumPoints; i++)
+        {
+            _horizontalLineStarts[i] = (_horizontalLineStarts[i] + speed * dt) % width;
+        }
     }
 
     /**
@@ -64,14 +62,28 @@ public class Background
      */
     public void draw(Canvas canvas)
     {
-        //TODO: clip offscreen stuff for better performance, make sprites smaller
+        canvas.drawPaint(_backgroundPaint);
 
-        canvas.drawBitmap(_cloudLayerSprite, _cloudXOffset, 0, null);
-        canvas.drawBitmap(_cloudLayerSprite, _cloudXOffset - _cloudLayerSprite.getWidth(), 0, null);
-        canvas.drawBitmap(_cloudLayerSprite, _cloudXOffset + _cloudLayerSprite.getWidth(), 0, null);
+        float topY = _gorlorn.getYFromPercent(0.45f);
 
-        canvas.drawBitmap(_mountainLayerSprite, _mountainXOffset, _mountainYOffset, null);
-        canvas.drawBitmap(_mountainLayerSprite, _mountainXOffset - _mountainLayerSprite.getWidth(), _mountainYOffset, null);
-        canvas.drawBitmap(_mountainLayerSprite, _mountainXOffset + _mountainLayerSprite.getWidth(), _mountainYOffset, null);
+        //Draw the vertical lines
+        float centerX = _gorlorn.ScreenWidth * 0.5f;
+        for (int i = 0; i < NumPoints; i++)
+        {
+            float distFromCenter = centerX - _horizontalLineStarts[i];
+            float bottomX = centerX - (distFromCenter * 3.2f);
+
+            canvas.drawLine(_horizontalLineStarts[i], topY, bottomX, _gorlorn.ScreenHeight, _linePaint);
+        }
+
+        //Draw the horizontal lines
+        float y = topY;
+        float yInterval = _gorlorn.getYFromPercent(0.05f);
+        while (y < _gorlorn.ScreenHeight)
+        {
+            canvas.drawLine(0, y, _gorlorn.ScreenWidth, y, _linePaint);
+            y += yInterval;
+            yInterval *= 1.3f;
+        }
     }
 }
