@@ -106,7 +106,7 @@ public class Entity
         _timeStartedBlinkingMs = new Date().getTime();
         _blinkDurationMs = durationMs;
         _isBlinking = true;
-        _blinkOpacityDelta = -9.0f;
+        _blinkOpacityDelta = -13.0f;
     }
 
     /**

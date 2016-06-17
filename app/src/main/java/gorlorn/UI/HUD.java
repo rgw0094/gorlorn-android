@@ -61,12 +61,12 @@ public class HUD
 
         int buttonHitBoxDiameter = gorlornActivity.getXFromPercent(Constants.ButtonDiameter);
         _leftButtonHitBox = new Rect(0, gorlornActivity.ScreenHeight - buttonHitBoxDiameter, buttonHitBoxDiameter, gorlornActivity.ScreenHeight);
-        _rightButtonHitBox = new Rect(buttonHitBoxDiameter, gorlornActivity.ScreenHeight - buttonHitBoxDiameter, buttonHitBoxDiameter * 2, gorlornActivity.ScreenHeight);
+        //_rightButtonHitBox = new Rect(buttonHitBoxDiameter, gorlornActivity.ScreenHeight - buttonHitBoxDiameter, buttonHitBoxDiameter * 2, gorlornActivity.ScreenHeight);
+        _rightButtonHitBox = new Rect(gorlornActivity.ScreenWidth - buttonHitBoxDiameter, gorlornActivity.ScreenHeight - buttonHitBoxDiameter, gorlornActivity.ScreenWidth, gorlornActivity.ScreenHeight);
         _fireButtonHitBox = new Rect(gorlornActivity.ScreenWidth - buttonHitBoxDiameter, gorlornActivity.ScreenHeight - buttonHitBoxDiameter, gorlornActivity.ScreenWidth, gorlornActivity.ScreenHeight);
 
-        float buttonSpriteDiameterPercent = Constants.ButtonDiameter * 0.6f;
-        _leftButtonSprite = gorlornActivity.createBitmapByWidthPercent(R.drawable.left_button, buttonSpriteDiameterPercent);
-        _rightButtonSprite = gorlornActivity.createBitmapByWidthPercent(R.drawable.right_button, buttonSpriteDiameterPercent);
+        _leftButtonSprite = gorlornActivity.createBitmapByWidthPercent(R.drawable.left_button, Constants.ButtonDiameter);
+        _rightButtonSprite = gorlornActivity.createBitmapByWidthPercent(R.drawable.right_button, Constants.ButtonDiameter);
 
         _buttonBorderPaint = new Paint();
         _buttonBorderPaint.setAntiAlias(true);
@@ -80,7 +80,7 @@ public class HUD
         _scorePaint.setColor(Color.WHITE);
         _scorePaint.setStyle(Paint.Style.FILL);
         _scorePaint.setAntiAlias(true);
-        _scorePaint.setTextSize(50);
+        _scorePaint.setTextSize(_gorlornActivity.getYFromPercent(0.05f));
 
         int healthBarLength = _gorlornActivity.getXFromPercent(Constants.HealthBarLength);
         int healthBarThickness = _gorlornActivity.getYFromPercent(Constants.HealthBarThickness);
@@ -247,6 +247,8 @@ public class HUD
             _fireButtonIndex = -1;
             _moveButtonIndex = -1;
         }
+
+        _isFirePressed = true;
     }
 
     /**
@@ -290,7 +292,7 @@ public class HUD
 
         drawButton(canvas, _leftButtonSprite, _leftButtonHitBox);
         drawButton(canvas, _rightButtonSprite, _rightButtonHitBox);
-        drawButton(canvas, _leftButtonSprite, _fireButtonHitBox);
+        //drawButton(canvas, _leftButtonSprite, _fireButtonHitBox);
 
         if (_gorlornActivity.IsDebugMode)
         {
@@ -306,7 +308,7 @@ public class HUD
         }
 
         _healthBar.draw(canvas, _gorlornActivity.Hero.getHealthPercent());
-        _energyBar.draw(canvas, _gorlornActivity.Hero.getEnergyPercent());
+        //_energyBar.draw(canvas, _gorlornActivity.Hero.getEnergyPercent());
     }
 
     /**
@@ -318,11 +320,11 @@ public class HUD
      */
     private void drawButton(Canvas canvas, Bitmap sprite, Rect box)
     {
-        canvas.drawRect(box, _buttonBorderPaint);
-        canvas.drawLine(box.left, box.top, box.right, box.top, _buttonBorderPaint);
-        canvas.drawLine(box.right, box.top, box.right, box.bottom, _buttonBorderPaint);
-        canvas.drawLine(box.right, box.bottom, box.left, box.bottom, _buttonBorderPaint);
-        canvas.drawLine(box.left, box.bottom, box.left, box.top, _buttonBorderPaint);
+//        canvas.drawRect(box, _buttonBorderPaint);
+//        canvas.drawLine(box.left, box.top, box.right, box.top, _buttonBorderPaint);
+//        canvas.drawLine(box.right, box.top, box.right, box.bottom, _buttonBorderPaint);
+//        canvas.drawLine(box.right, box.bottom, box.left, box.bottom, _buttonBorderPaint);
+//        canvas.drawLine(box.left, box.bottom, box.left, box.top, _buttonBorderPaint);
 
         int x = (int) (box.left + ((box.width() - sprite.getWidth()) * 0.5f));
         int y = (int) (box.top + ((box.height() - sprite.getHeight()) * 0.5f));

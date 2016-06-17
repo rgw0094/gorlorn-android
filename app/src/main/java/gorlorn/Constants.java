@@ -30,7 +30,7 @@ public class Constants
     public static float HeartSpeed = 0.2f;
 
     //Times
-    public static int PlayerBlinksOnHitMs = 1500;
+    public static int PlayerBlinksOnHitMs = 2000;
     public static int ChainBulletLifeTimeMs = 200;
 
     //region Misc
@@ -39,7 +39,7 @@ public class Constants
     public static float EnemySpawnRateAcceleration = 0.995f;
     public static float EnemyDamage = 0.2f;
     public static float HeartHealthRestore = 0.2f;
-    public static long MinShotIntervalMs = 175;
+    public static long MinShotIntervalMs = 200;
     public static int StartingChainCountToSpawnHeart = 4;
 
     public static float EnergyPerShot = 0.18f;   //Percent of energy consumed per shot

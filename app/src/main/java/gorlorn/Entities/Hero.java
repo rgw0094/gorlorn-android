@@ -76,11 +76,11 @@ public class Hero extends Entity
     @Override
     public boolean update(float dt)
     {
-        if (_gorlornActivity.Hud.isLeftPressed())
+        if (!getIsBlinking() && _gorlornActivity.Hud.isLeftPressed())
         {
             Vx = -_speed;
         }
-        else if (_gorlornActivity.Hud.isRightPressed())
+        else if (!getIsBlinking() && _gorlornActivity.Hud.isRightPressed())
         {
             Vx = _speed;
         }
@@ -94,7 +94,9 @@ public class Hero extends Entity
         //Keep the hero within the game area
         X = Math.min(Math.max(X, _gorlornActivity.GameArea.left + Width * 0.5f), _gorlornActivity.GameArea.right - (Width * 0.5f));
 
-        if (_energyPercent >= Constants.EnergyPerShot)
+//        if (_energyPercent >= Constants.EnergyPerShot)
+//        {
+        if (!getIsBlinking())
         {
             long now = new Date().getTime();
             if (_gorlornActivity.Hud.isFirePressed() && now - _lastShotFiredMs > Constants.MinShotIntervalMs)
@@ -104,6 +106,7 @@ public class Hero extends Entity
                 _energyPercent -= Constants.EnergyPerShot;
             }
         }
+        //}
 
         _energyPercent = Math.min(1.0f, _energyPercent + (Constants.EnergyRegen * dt));
 
