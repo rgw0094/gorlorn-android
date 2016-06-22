@@ -15,7 +15,7 @@ public class Entity
 {
     protected Rect _hitBox;
     private boolean _isBlinking;
-    private long _timeStartedBlinkingMs;
+    protected long _timeStartedBlinkingMs;
     private int _blinkDurationMs;
     private float _blinkOpacityDelta;
     private float _opacity = 1.0f;
@@ -27,6 +27,7 @@ public class Entity
     public int Height;
     public float Vx;
     public float Vy;
+    public float MaxV = Float.MAX_VALUE;
     public float Ax;
     public float Ay;
 
@@ -48,8 +49,8 @@ public class Entity
     {
         X += Vx * dt;
         Y += Vy * dt;
-        Vx += Ax * dt;
-        Vy += Ay * dt;
+        Vx = Math.min(MaxV, Vx + Ax * dt);
+        Vy = Math.min(MaxV, Vy + Ay * dt);
 
         _hitBox = new Rect((int) X, (int) Y, (int) X + Width, (int) Y + Height);
 
@@ -90,7 +91,7 @@ public class Entity
         if (_opacity != 1.0f)
         {
             paint = new Paint();
-            paint.setARGB((int)(255.0f * _opacity), 255, 255, 255);
+            paint.setARGB((int) (255.0f * _opacity), 255, 255, 255);
         }
 
         canvas.drawBitmap(Sprite, X - (float) Width / 2.0f, Y - (float) Height / 2.0f, paint);
@@ -106,7 +107,7 @@ public class Entity
         _timeStartedBlinkingMs = new Date().getTime();
         _blinkDurationMs = durationMs;
         _isBlinking = true;
-        _blinkOpacityDelta = -13.0f;
+        _blinkOpacityDelta = -17.0f;
     }
 
     /**

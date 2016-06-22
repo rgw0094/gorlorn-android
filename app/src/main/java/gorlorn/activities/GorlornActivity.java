@@ -54,6 +54,7 @@ public class GorlornActivity extends GameLoopActivity
     public int ScreenHeight;
     public boolean IsDebugMode = true;
     public long Score = 0;
+    public long HighScore = 0;
 
     /**
      * Bounds of the game area where the hero, enemies, bullets, etc. can move.

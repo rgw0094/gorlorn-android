@@ -33,6 +33,7 @@ public class HUD
     private HealthBar _energyBar;
     private LinkedList<Points> _points = new LinkedList<>();
     private Paint _scorePaint;
+    private Paint _highScorePaint;
     private int _numPointersDown = 0;
 
     private Paint _buttonBorderPaint;
@@ -76,11 +77,18 @@ public class HUD
         _buttonBackgroundPaint.setAntiAlias(true);
         _buttonBackgroundPaint.setARGB(255, 22, 22, 22);
 
+        //TODO: factory for this
         _scorePaint = new Paint();
         _scorePaint.setColor(Color.WHITE);
         _scorePaint.setStyle(Paint.Style.FILL);
         _scorePaint.setAntiAlias(true);
-        _scorePaint.setTextSize(_gorlornActivity.getYFromPercent(0.05f));
+        _scorePaint.setTextSize(_gorlornActivity.getYFromPercent(0.08f));
+
+        _highScorePaint = new Paint();
+        _highScorePaint.setColor(Color.WHITE);
+        _highScorePaint.setStyle(Paint.Style.FILL);
+        _highScorePaint.setAntiAlias(true);
+        _highScorePaint.setTextSize(_gorlornActivity.getYFromPercent(0.05f));
 
         int healthBarLength = _gorlornActivity.getXFromPercent(Constants.HealthBarLength);
         int healthBarThickness = _gorlornActivity.getYFromPercent(Constants.HealthBarThickness);
@@ -288,7 +296,8 @@ public class HUD
      */
     public void draw(Canvas canvas)
     {
-        canvas.drawText(MessageFormat.format("{0}", _gorlornActivity.Score), 10, 50, _scorePaint);
+        canvas.drawText(MessageFormat.format("High Score: {0}", _gorlornActivity.HighScore), _gorlornActivity.getXFromPercent(0.01f), _gorlornActivity.getYFromPercent(0.065f), _highScorePaint);
+        canvas.drawText(MessageFormat.format("Score: {0}", _gorlornActivity.Score), _gorlornActivity.getXFromPercent(0.01f), _gorlornActivity.getYFromPercent(0.14f), _scorePaint);
 
         drawButton(canvas, _leftButtonSprite, _leftButtonHitBox);
         drawButton(canvas, _rightButtonSprite, _rightButtonHitBox);
@@ -297,9 +306,9 @@ public class HUD
         if (_gorlornActivity.IsDebugMode)
         {
             //Show button states
-            canvas.drawText(MessageFormat.format("Left  {0} {1}", _isLeftPressed ? "D" : "U", _moveButtonIndex), 10, 100, _scorePaint);
-            canvas.drawText(MessageFormat.format("Right {0} {1}", _isRightPressed ? "D" : "U", _moveButtonIndex), 10, 150, _scorePaint);
-            canvas.drawText(MessageFormat.format("Fire  {0} {1}", _isFirePressed ? "D" : "U", _fireButtonIndex), 10, 200, _scorePaint);
+            canvas.drawText(MessageFormat.format("Left  {0} {1}", _isLeftPressed ? "D" : "U", _moveButtonIndex), 10, 400, _scorePaint);
+            canvas.drawText(MessageFormat.format("Right {0} {1}", _isRightPressed ? "D" : "U", _moveButtonIndex), 10, 450, _scorePaint);
+            canvas.drawText(MessageFormat.format("Fire  {0} {1}", _isFirePressed ? "D" : "U", _fireButtonIndex), 10, 500, _scorePaint);
         }
 
         for (Points points : _points)

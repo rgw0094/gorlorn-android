@@ -14,6 +14,7 @@ public class Hero extends Entity
 {
     private GorlornActivity _gorlornActivity;
     private float _speed;
+    private float _acceleration;
     private long _lastShotFiredMs;
     private float _healthPercent = 1.0f;
     private float _energyPercent = 1.0f;
@@ -29,8 +30,10 @@ public class Hero extends Entity
         super(gorlornActivity.createBitmapByWidthPercent(R.drawable.hero, Constants.HeroDiameter));
 
         _gorlornActivity = gorlornActivity;
-        _speed = ((_gorlornActivity.ScreenWidth + _gorlornActivity.ScreenHeight) / 2.0f) * Constants.HeroSpeed;
+        _speed = (float)_gorlornActivity.ScreenWidth * Constants.HeroSpeed;
+        _acceleration = (float)gorlornActivity.ScreenWidth * Constants.HeroAcceleration;
 
+        MaxV = _speed;
         X = gorlornActivity.ScreenWidth * .5f;
         Y = gorlornActivity.getYFromPercent(0.995f - Constants.HeroDiameter);
     }
@@ -76,13 +79,22 @@ public class Hero extends Entity
     @Override
     public boolean update(float dt)
     {
-        if (!getIsBlinking() && _gorlornActivity.Hud.isLeftPressed())
+        boolean canMove = !getIsBlinking() || new Date().getTime() > _timeStartedBlinkingMs + Constants.PlayerFrozenOnHitMs;
+
+        //Update movement - the player will have a quick acceleration, unless they are already moving in which case they can change direction instantly
+        if (canMove && _gorlornActivity.Hud.isLeftPressed())
         {
-            Vx = -_speed;
+//            if (Vx > 0.0f)
+//                Vx = -_speed;
+//            else if (Vx == 0.0f)
+                Ax = -_acceleration;
         }
-        else if (!getIsBlinking() && _gorlornActivity.Hud.isRightPressed())
+        else if (canMove && _gorlornActivity.Hud.isRightPressed())
         {
-            Vx = _speed;
+//            if (Vx < 0.0f)
+//                Vx = _speed;
+//            else if (Vx == 0.0f)
+                Ax = _acceleration;
         }
         else
         {

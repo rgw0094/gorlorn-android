@@ -1,9 +1,13 @@
 package gorlorn.UI;
 
+import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 
+import java.util.Date;
+
 import gorlorn.activities.GorlornActivity;
+import gorlorn.activities.R;
 
 /**
  * Renders the background of the gameplay area
@@ -14,10 +18,14 @@ public class Background
 {
     private static int NumPoints = 10;
 
+    private Bitmap _backgroundBitmap;
     private GorlornActivity _gorlorn;
     private Paint _linePaint;
     private Paint _backgroundPaint;
     private float[] _horizontalLineStarts = new float[NumPoints];
+    private float _backgroundXOffset;
+    private float _backgroundYOffset;
+    private float _time;
 
     /**
      * Constructs a new Background.
@@ -32,6 +40,8 @@ public class Background
         _linePaint.setStrokeWidth(_gorlorn.getYFromPercent(0.005f));
         _backgroundPaint = new Paint();
         _backgroundPaint.setARGB(255, 24, 20, 37);
+
+        _backgroundBitmap = gorlornActivity.createBitmap(R.drawable.space, gorlornActivity.getXFromPercent(1.1f), gorlornActivity.getYFromPercent(1.1f));
 
         for (int i = 0; i < NumPoints; i++)
         {
@@ -48,6 +58,10 @@ public class Background
     {
         float width = _gorlorn.ScreenWidth;
         float speed = width * 0.1f;
+        _time += dt;
+
+        _backgroundXOffset = (float)_gorlorn.getXFromPercent(0.05f) * (float)Math.cos(_time / 2.0f) - (float)_gorlorn.getXFromPercent(0.05f);
+        _backgroundYOffset = (float)_gorlorn.getYFromPercent(0.05f) * (float)Math.sin(_time / 2.0f) - (float)_gorlorn.getYFromPercent(0.05f);
 
         for (int i = 0; i < NumPoints; i++)
         {
@@ -62,7 +76,8 @@ public class Background
      */
     public void draw(Canvas canvas)
     {
-        canvas.drawPaint(_backgroundPaint);
+        canvas.drawBitmap(_backgroundBitmap, _backgroundXOffset, _backgroundYOffset, null);
+        //canvas.drawPaint(_backgroundPaint);
 
         float topY = _gorlorn.getYFromPercent(0.45f);
 

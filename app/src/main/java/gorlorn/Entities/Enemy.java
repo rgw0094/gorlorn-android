@@ -28,7 +28,7 @@ public class Enemy extends Entity
         //Check for collision with hero
         if (_gorlornActivity.Hero.testHit(this))
         {
-            _gorlornActivity.Hero.dealDamage(Constants.EnemyDamage);
+            //_gorlornActivity.Hero.dealDamage(Constants.EnemyDamage);
             return true;
         }
 
@@ -38,7 +38,7 @@ public class Enemy extends Entity
             Vx *= -1;
         }
 
-        //Bounce of top/bottom edges - don't check for this until the enemy has fully entered the screen the first time
+        //Bounce off top/bottom edges - don't check for this until the enemy has fully entered the screen the first time
         if (_hasEnteredScreen)
         {
             if (Y <= _gorlornActivity.GameArea.top + Height * 0.5f || Y >= _gorlornActivity.GameArea.bottom - (Height * 0.5f))

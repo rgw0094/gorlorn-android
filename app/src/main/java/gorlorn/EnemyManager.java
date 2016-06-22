@@ -101,7 +101,7 @@ public class EnemyManager
     {
         Random random = new Random();
 
-        double angle = Math.PI * 0.25 + random.nextDouble() * Math.PI * 0.5;
+        double angle = GetEnemyAngle(random);
         float speed = ((_gorlornActivity.ScreenWidth + _gorlornActivity.ScreenHeight) / 2.0f) * _enemySpeed;
         float minX = _gorlornActivity.GameArea.left + _gorlornActivity.GameArea.width() * 0.2f;
 
@@ -114,5 +114,18 @@ public class EnemyManager
         _enemies.add(newEnemy);
         _enemySpawnIntervalMs *= Constants.EnemySpawnRateAcceleration;
         _enemySpeed *= Constants.EnemySpeedMultiplier;
+    }
+
+    private double GetEnemyAngle(Random random)
+    {
+        boolean left = random.nextDouble() < 0.5;
+        if (left)
+        {
+            return Math.PI * .2 + random.nextDouble() * Math.PI * 0.2;
+        }
+        else
+        {
+            return Math.PI * .6 + random.nextDouble() * Math.PI * 0.2;
+        }
     }
 }

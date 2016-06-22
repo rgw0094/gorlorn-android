@@ -26,10 +26,12 @@ public class Constants
     public static float EnemySpeed = 0.65f;             //Percent of the screen traversed per second
     public static float EnemySpeedMultiplier = 1.001f;  //Each new enemy is this much faster than the last
     public static float HeroSpeed = 0.9f;
+    public static float HeroAcceleration = 2.0f;        //Percent of the screen width accelerated per second
     public static float BulletSpeed = 0.8f;
     public static float HeartSpeed = 0.2f;
 
     //Times
+    public static int PlayerFrozenOnHitMs = 1200;
     public static int PlayerBlinksOnHitMs = 2000;
     public static int ChainBulletLifeTimeMs = 200;
 
