@@ -4,20 +4,18 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.Point;
 import android.graphics.Rect;
 import android.support.v4.view.MotionEventCompat;
 import android.view.MotionEvent;
 
 import java.text.MessageFormat;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 import gorlorn.Entities.Points;
 import gorlorn.Constants;
+import gorlorn.Gorlorn;
 import gorlorn.activities.GorlornActivity;
 import gorlorn.activities.R;
 
@@ -28,7 +26,7 @@ import gorlorn.activities.R;
  */
 public class HUD
 {
-    private GorlornActivity _gorlornActivity;
+    private Gorlorn _gorlorn;
     private Rect _leftButtonHitBox;
     private Rect _rightButtonHitBox;
     private Bitmap _leftButtonSprite;
@@ -37,7 +35,7 @@ public class HUD
     private LinkedList<Points> _points = new LinkedList<>();
     public Paint _scorePaint;
     private Paint _highScorePaint;
-    private List<Pointer> _pointers = new LinkedList<Pointer>();
+    private List<Pointer> _pointers = new LinkedList<>();
 
     private boolean _isLeftPressed;
     private boolean _isRightPressed;
@@ -50,42 +48,42 @@ public class HUD
      * Constructs a new HUD (Heads up display). This user interface includes the movement and fire button,
      * and probably health and stats and stuff.
      *
-     * @param gorlornActivity
+     * @param gorlorn
      */
-    public HUD(GorlornActivity gorlornActivity)
+    public HUD(Gorlorn gorlorn)
     {
-        _gorlornActivity = gorlornActivity;
+        _gorlorn = gorlorn;
 
         //Set up the movement buttons
-        int buttonHitBoxDiameter = gorlornActivity.getXFromPercent(Constants.ButtonDiameter);
-        _leftButtonHitBox = new Rect(0, gorlornActivity.ScreenHeight - buttonHitBoxDiameter, buttonHitBoxDiameter, gorlornActivity.ScreenHeight);
-        _rightButtonHitBox = new Rect(gorlornActivity.ScreenWidth - buttonHitBoxDiameter, gorlornActivity.ScreenHeight - buttonHitBoxDiameter, gorlornActivity.ScreenWidth, gorlornActivity.ScreenHeight);
+        int buttonHitBoxDiameter = gorlorn.getXFromPercent(Constants.ButtonDiameter);
+        _leftButtonHitBox = new Rect(0, gorlorn.ScreenHeight - buttonHitBoxDiameter, buttonHitBoxDiameter, gorlorn.ScreenHeight);
+        _rightButtonHitBox = new Rect(gorlorn.ScreenWidth - buttonHitBoxDiameter, gorlorn.ScreenHeight - buttonHitBoxDiameter, gorlorn.ScreenWidth, gorlorn.ScreenHeight);
 
-        _leftButtonSprite = gorlornActivity.createBitmapByWidthPercent(R.drawable.left_button, Constants.ButtonDiameter);
-        _rightButtonSprite = gorlornActivity.createBitmapByWidthPercent(R.drawable.right_button, Constants.ButtonDiameter);
+        _leftButtonSprite = gorlorn.createBitmapByWidthPercent(R.drawable.left_button, Constants.ButtonDiameter);
+        _rightButtonSprite = gorlorn.createBitmapByWidthPercent(R.drawable.right_button, Constants.ButtonDiameter);
 
         //TODO: factory for this
         _scorePaint = new Paint();
         _scorePaint.setColor(Color.WHITE);
         _scorePaint.setStyle(Paint.Style.FILL);
         _scorePaint.setAntiAlias(true);
-        _scorePaint.setTextSize(_gorlornActivity.getYFromPercent(0.08f));
+        _scorePaint.setTextSize(_gorlorn.getYFromPercent(0.08f));
 
         _highScorePaint = new Paint();
         _highScorePaint.setColor(Color.WHITE);
         _highScorePaint.setStyle(Paint.Style.FILL);
         _highScorePaint.setAntiAlias(true);
-        _highScorePaint.setTextSize(_gorlornActivity.getYFromPercent(0.05f));
+        _highScorePaint.setTextSize(_gorlorn.getYFromPercent(0.05f));
 
-        int healthBarLength = _gorlornActivity.getXFromPercent(Constants.HealthBarLength);
-        int healthBarThickness = _gorlornActivity.getYFromPercent(Constants.HealthBarThickness);
+        int healthBarLength = _gorlorn.getXFromPercent(Constants.HealthBarLength);
+        int healthBarThickness = _gorlorn.getYFromPercent(Constants.HealthBarThickness);
 
         Paint healthPaint = new Paint();
         healthPaint.setARGB(255, 255, 0, 0);
         _healthBar = new HealthBar(
                 Orientation.Horizontal,
-                _gorlornActivity.getXFromPercent(0.99f) - healthBarLength,
-                _gorlornActivity.getYFromPercent(0.01f), healthBarThickness,
+                _gorlorn.getXFromPercent(0.99f) - healthBarLength,
+                _gorlorn.getYFromPercent(0.01f), healthBarThickness,
                 healthBarLength,
                 healthPaint);
 
@@ -222,9 +220,9 @@ public class HUD
     public void addPoints(float x, float y, int chainCount)
     {
         long points = (long) Math.pow(2, chainCount);
-        _gorlornActivity.Score += points;
+        _gorlorn.Score += points;
 
-        _points.add(new Points(_gorlornActivity, points, x, y));
+        _points.add(new Points(_gorlorn, points, x, y));
     }
 
     /**
@@ -251,13 +249,13 @@ public class HUD
      */
     public void draw(Canvas canvas)
     {
-        canvas.drawText(MessageFormat.format("High Score: {0}", _gorlornActivity.HighScore), _gorlornActivity.getXFromPercent(0.01f), _gorlornActivity.getYFromPercent(0.065f), _highScorePaint);
-        canvas.drawText(MessageFormat.format("Score: {0}", _gorlornActivity.Score), _gorlornActivity.getXFromPercent(0.01f), _gorlornActivity.getYFromPercent(0.14f), _scorePaint);
+        canvas.drawText(MessageFormat.format("High Score: {0}", _gorlorn.HighScore), _gorlorn.getXFromPercent(0.01f), _gorlorn.getYFromPercent(0.065f), _highScorePaint);
+        canvas.drawText(MessageFormat.format("Score: {0}", _gorlorn.Score), _gorlorn.getXFromPercent(0.01f), _gorlorn.getYFromPercent(0.14f), _scorePaint);
 
         drawButton(canvas, _leftButtonSprite, _leftButtonHitBox);
         drawButton(canvas, _rightButtonSprite, _rightButtonHitBox);
 
-        if (_gorlornActivity.IsDebugMode)
+        if (_gorlorn.IsDebugMode)
         {
             //Show button states
             canvas.drawText(MessageFormat.format("Left  {0}", _isLeftPressed ? "D" : "U"), 10, 400, _scorePaint);
@@ -269,7 +267,7 @@ public class HUD
             points.Draw(canvas);
         }
 
-        _healthBar.draw(canvas, _gorlornActivity.Hero.getHealthPercent());
+        _healthBar.draw(canvas, _gorlorn.Hero.getHealthPercent());
     }
 
     /**

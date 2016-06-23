@@ -1,9 +1,11 @@
 package gorlorn.Entities;
 
 import android.graphics.Bitmap;
+import android.graphics.Rect;
 
 import java.util.Date;
 
+import gorlorn.Gorlorn;
 import gorlorn.activities.GorlornActivity;
 
 /**
@@ -11,7 +13,7 @@ import gorlorn.activities.GorlornActivity;
  */
 public class Bullet extends Entity
 {
-    private GorlornActivity _gorlornActivity;
+    private Gorlorn _gorlorn;
     private long _lifeTimeMs;
     private long _createdTimeMs;
 
@@ -19,15 +21,12 @@ public class Bullet extends Entity
 
     /**
      * Constructs a bullet that will dissapear after the specified number of milliseconds.
-     *
-     * @param sprite
-     * @param lifetimeMs
      */
-    public Bullet(GorlornActivity gorlornActivity, Bitmap sprite, float x, float y, float speed, double angle, int chainCount, long lifetimeMs)
+    public Bullet(Gorlorn gorlorn, Bitmap sprite, float x, float y, float speed, double angle, int chainCount, long lifetimeMs)
     {
         super(sprite);
 
-        _gorlornActivity = gorlornActivity;
+        _gorlorn = gorlorn;
         _lifeTimeMs = lifetimeMs;
         ChainCount = chainCount;
         _createdTimeMs = new Date().getTime();
@@ -54,9 +53,7 @@ public class Bullet extends Entity
         super.update(dt);
 
         //Kill the bullet if its left the game area
-        if (!_gorlornActivity.GameArea.contains(_hitBox))
-            return true;
-
-        return !_gorlornActivity.GameArea.contains(_hitBox);
+        Rect gameArea = new Rect(0, 0, _gorlorn.ScreenWidth, _gorlorn.ScreenHeight);
+        return !gameArea.contains(_hitBox);
     }
 }

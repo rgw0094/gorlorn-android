@@ -4,6 +4,7 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Rect;
 
+import gorlorn.Gorlorn;
 import gorlorn.activities.GorlornActivity;
 
 /**
@@ -14,13 +15,13 @@ import gorlorn.activities.GorlornActivity;
 public class Button
 {
     private Bitmap _bitmap;
-    private GorlornActivity _gorlorn;
+    private Gorlorn _gorlorn;
     private Rect _hitBox;
     private int _x;
     private int _y;
     private boolean _isClicked;
 
-    public Button(GorlornActivity gorlorn, int id, float widthPercent, float heightPercent, int centerX, int centerY)
+    public Button(Gorlorn gorlorn, int id, float widthPercent, float heightPercent, int centerX, int centerY)
     {
         _gorlorn = gorlorn;
         _bitmap = _gorlorn.createBitmap(id, _gorlorn.getXFromPercent(widthPercent), _gorlorn.getYFromPercent(heightPercent));

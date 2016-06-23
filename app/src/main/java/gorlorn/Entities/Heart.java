@@ -3,6 +3,7 @@ package gorlorn.Entities;
 import android.graphics.Bitmap;
 
 import gorlorn.Constants;
+import gorlorn.Gorlorn;
 import gorlorn.activities.GorlornActivity;
 
 /**
@@ -12,7 +13,7 @@ import gorlorn.activities.GorlornActivity;
  */
 public class Heart extends Entity
 {
-    private GorlornActivity _gorlorn;
+    private Gorlorn _gorlorn;
 
     /**
      * Constructs a new heart.
@@ -22,7 +23,7 @@ public class Heart extends Entity
      * @param x The x coordinate at which to spawn the heart
      * @param y The y coordinate at which to spawn the heart
      */
-    public Heart(GorlornActivity gorlorn, Bitmap sprite, int x, int y)
+    public Heart(Gorlorn gorlorn, Bitmap sprite, int x, int y)
     {
         super(sprite);
 
@@ -47,6 +48,6 @@ public class Heart extends Entity
         }
 
         //Disappear when the heart goes off the screen.
-        return Y > _gorlorn.GameArea.bottom + Height;
+        return Y > _gorlorn.ScreenHeight + Height;
     }
 }

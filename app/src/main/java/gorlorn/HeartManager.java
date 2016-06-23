@@ -17,11 +17,15 @@ import gorlorn.activities.R;
  */
 public class HeartManager
 {
-    private GorlornActivity _gorlorn;
+    private Gorlorn _gorlorn;
     private LinkedList<Heart> _hearts = new LinkedList<>();
     private Bitmap _heartSprite;
 
-    public HeartManager(GorlornActivity gorlorn)
+    /**
+     * Constructs a new HeartManager.
+     * @param gorlorn
+     */
+    public HeartManager(Gorlorn gorlorn)
     {
         _gorlorn = gorlorn;
         _heartSprite = gorlorn.createBitmapByWidthPercent(R.drawable.heart, Constants.HeartDiameter);

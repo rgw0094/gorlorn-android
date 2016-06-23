@@ -10,6 +10,7 @@ import android.graphics.Rect;
 
 import java.util.Date;
 
+import gorlorn.Gorlorn;
 import gorlorn.activities.GorlornActivity;
 import gorlorn.activities.R;
 
@@ -31,7 +32,7 @@ public class DeathScreen
     private int _textFadeDurationMs = 200;
     private int _redFlashDuration = 100;
 
-    private GorlornActivity _gorlorn;
+    private Gorlorn _gorlorn;
     private long _timeEnteredPhaseMs;
     private float _backgroundOpacity = 0.0f;
     private Phase _currentPhase;
@@ -39,7 +40,7 @@ public class DeathScreen
     private Paint _heroPaint = new Paint();
     private Button _tryAgainButton;
 
-    public DeathScreen(GorlornActivity gorlorn)
+    public DeathScreen(Gorlorn gorlorn)
     {
         _gorlorn = gorlorn;
 

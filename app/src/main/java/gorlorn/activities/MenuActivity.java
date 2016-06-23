@@ -5,24 +5,38 @@ import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
 import android.graphics.Point;
 import android.os.Bundle;
 import android.view.Display;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.MobileAds;
-import com.squareup.picasso.Picasso;
+
+import gorlorn.Framework.GameLoopView;
+import gorlorn.Framework.RenderLoopBase;
+import gorlorn.UI.Background;
 
 /**
  * Activity for the menu that dislpays when the game first starts.
  */
 public class MenuActivity extends Activity
 {
+    //region Private Variables
+
+    private Background _background;
+
+    //endregion
+
+    //region GameLoopActivity Overrides
+
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -38,9 +52,19 @@ public class MenuActivity extends Activity
 
         setContentView(R.layout.activity_menu);
 
-        DisplayBackground();
+        RelativeLayout root = (RelativeLayout) findViewById(R.id.menu_layout);
+
+        root.addView(new GameLoopView(new MenuRenderLoop(this)), 0,
+                new WindowManager.LayoutParams(
+                        RelativeLayout.LayoutParams.MATCH_PARENT,
+                        RelativeLayout.LayoutParams.MATCH_PARENT));
+
         DisplayAd();
     }
+
+    //endregion
+
+    //region Public Methods
 
     public void startGame(View view)
     {
@@ -58,6 +82,10 @@ public class MenuActivity extends Activity
         finishAffinity();
     }
 
+    //endregion
+
+    //region Private Methods
+
     private void DisplayAd()
     {
         MobileAds.initialize(getApplicationContext(), "ca-app-pub-8965087743383168~1842466939");
@@ -71,18 +99,45 @@ public class MenuActivity extends Activity
         mAdView.loadAd(adRequest);
     }
 
-    private void DisplayBackground()
+    //endregion
+
+    private class MenuRenderLoop extends RenderLoopBase
     {
-        Display display = getWindowManager().getDefaultDisplay();
-        Point size = new Point();
-        display.getSize(size);
+        public MenuRenderLoop(Activity activity)
+        {
+            super(activity);
+        }
 
-        Bitmap background = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getApplicationContext().getResources(), R.drawable.space), size.x, size.y, true);
-        ImageView backgroundView = (ImageView)findViewById(R.id.backgroundView);
-        backgroundView.setImageBitmap(background);
+        @Override
+        public void handleInputEvent(MotionEvent me)
+        {
+        }
 
-//        Picasso.with(getApplicationContext())
-//                .load(R.drawable.space)
-//                .into(backgroundView);
+        @Override
+        public void update(float dt)
+        {
+            if (_background == null)
+            {
+                _background = new Background(this, true);
+            }
+            else
+            {
+                _background.update(dt);
+            }
+        }
+
+        @Override
+        public void draw(Canvas canvas)
+        {
+            if (_background != null)
+            {
+                _background.draw(canvas);
+            }
+        }
+
+        @Override
+        public void handleException(Exception e)
+        {
+        }
     }
 }

@@ -17,19 +17,19 @@ import gorlorn.activities.R;
  */
 public class EnemyManager
 {
-    private GorlornActivity _gorlornActivity;
+    private Gorlorn _gorlorn;
     private LinkedList<Enemy> _enemies;
     private Bitmap _enemySprite;
     private long _timeLastEnemySpawnedMs;
     private long _enemySpawnIntervalMs = Constants.StartingEnemySpawnIntervalMs;
     private float _enemySpeed;
 
-    public EnemyManager(GorlornActivity gorlornActivity)
+    public EnemyManager(Gorlorn gorlorn)
     {
-        _gorlornActivity = gorlornActivity;
+        _gorlorn = gorlorn;
         _enemySpeed = Constants.EnemySpeed;
         _enemies = new LinkedList<>();
-        _enemySprite = gorlornActivity.createBitmapByWidthPercent(R.drawable.enemy, Constants.EnemyDiameter);
+        _enemySprite = gorlorn.createBitmapByWidthPercent(R.drawable.enemy, Constants.EnemyDiameter);
     }
 
     /**
@@ -102,12 +102,12 @@ public class EnemyManager
         Random random = new Random();
 
         double angle = GetEnemyAngle(random);
-        float speed = ((_gorlornActivity.ScreenWidth + _gorlornActivity.ScreenHeight) / 2.0f) * _enemySpeed;
-        float minX = _gorlornActivity.GameArea.left + _gorlornActivity.GameArea.width() * 0.2f;
+        float speed = ((_gorlorn.ScreenWidth + _gorlorn.ScreenHeight) / 2.0f) * _enemySpeed;
+        float minX = _gorlorn.ScreenWidth * 0.2f;
 
-        Enemy newEnemy = new Enemy(_gorlornActivity, _enemySprite);
-        newEnemy.X = minX + random.nextFloat() * _gorlornActivity.GameArea.width() * 0.6f;
-        newEnemy.Y = _gorlornActivity.getYFromPercent(0.025f);
+        Enemy newEnemy = new Enemy(_gorlorn, _enemySprite);
+        newEnemy.X = minX + random.nextFloat() * _gorlorn.ScreenWidth * 0.6f;
+        newEnemy.Y = _gorlorn.getYFromPercent(0.025f);
         newEnemy.Vx = speed * (float) Math.cos(angle);
         newEnemy.Vy = speed * (float) Math.sin(angle);
 
