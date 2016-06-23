@@ -52,7 +52,7 @@ public class GorlornActivity extends GameLoopActivity
     public HeartManager HeartManager;
     public int ScreenWidth;
     public int ScreenHeight;
-    public boolean IsDebugMode = true;
+    public boolean IsDebugMode = false;
     public long Score = 0;
     public long HighScore = 0;
 

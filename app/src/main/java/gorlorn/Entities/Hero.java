@@ -1,5 +1,8 @@
 package gorlorn.Entities;
 
+import android.graphics.Canvas;
+
+import java.text.MessageFormat;
 import java.util.Date;
 
 import gorlorn.Constants;
@@ -17,7 +20,7 @@ public class Hero extends Entity
     private float _acceleration;
     private long _lastShotFiredMs;
     private float _healthPercent = 1.0f;
-    private float _energyPercent = 1.0f;
+    private HeroDirection _direction = HeroDirection.None;
 
 
     /**
@@ -30,8 +33,8 @@ public class Hero extends Entity
         super(gorlornActivity.createBitmapByWidthPercent(R.drawable.hero, Constants.HeroDiameter));
 
         _gorlornActivity = gorlornActivity;
-        _speed = (float)_gorlornActivity.ScreenWidth * Constants.HeroSpeed;
-        _acceleration = (float)gorlornActivity.ScreenWidth * Constants.HeroAcceleration;
+        _speed = (float) _gorlornActivity.ScreenWidth * Constants.HeroSpeed;
+        _acceleration = (float) gorlornActivity.ScreenWidth * Constants.HeroAcceleration;
 
         MaxV = _speed;
         X = gorlornActivity.ScreenWidth * .5f;
@@ -71,9 +74,16 @@ public class Hero extends Entity
         return _healthPercent;
     }
 
-    public float getEnergyPercent()
+    @Override
+    public void draw(Canvas canvas)
     {
-        return _energyPercent;
+        super.draw(canvas);
+
+        if (_gorlornActivity.IsDebugMode)
+        {
+            //Show movement state
+            canvas.drawText(MessageFormat.format("Dir  {0}", _direction), 10, 520, _gorlornActivity.Hud._scorePaint);
+        }
     }
 
     @Override
@@ -81,24 +91,31 @@ public class Hero extends Entity
     {
         boolean canMove = !getIsBlinking() || new Date().getTime() > _timeStartedBlinkingMs + Constants.PlayerFrozenOnHitMs;
 
-        //Update movement - the player will have a quick acceleration, unless they are already moving in which case they can change direction instantly
+        //Update movement - the player will have a quick acceleration, but stop instantly
         if (canMove && _gorlornActivity.Hud.isLeftPressed())
         {
-//            if (Vx > 0.0f)
-//                Vx = -_speed;
-//            else if (Vx == 0.0f)
-                Ax = -_acceleration;
+            if (_direction == HeroDirection.Right)
+            {
+                Vx = 0;
+            }
+            Ax = -_acceleration;
+            _direction = HeroDirection.Left;
         }
         else if (canMove && _gorlornActivity.Hud.isRightPressed())
         {
-//            if (Vx < 0.0f)
-//                Vx = _speed;
-//            else if (Vx == 0.0f)
-                Ax = _acceleration;
+            if (_direction == HeroDirection.Left)
+            {
+                Vx = 0;
+            }
+            Ax = _acceleration;
+            Ax = _acceleration;
+            _direction = HeroDirection.Right;
         }
         else
         {
             Vx = 0.0f;
+            Ax = 0.0f;
+            _direction = HeroDirection.None;
         }
 
         super.update(dt);
@@ -106,22 +123,23 @@ public class Hero extends Entity
         //Keep the hero within the game area
         X = Math.min(Math.max(X, _gorlornActivity.GameArea.left + Width * 0.5f), _gorlornActivity.GameArea.right - (Width * 0.5f));
 
-//        if (_energyPercent >= Constants.EnergyPerShot)
-//        {
         if (!getIsBlinking())
         {
             long now = new Date().getTime();
-            if (_gorlornActivity.Hud.isFirePressed() && now - _lastShotFiredMs > Constants.MinShotIntervalMs)
+            if (now - _lastShotFiredMs > Constants.MinShotIntervalMs)
             {
                 _lastShotFiredMs = now;
                 _gorlornActivity.BulletManager.FireBullet(X, Y, Math.PI * 1.5);
-                _energyPercent -= Constants.EnergyPerShot;
             }
         }
-        //}
-
-        _energyPercent = Math.min(1.0f, _energyPercent + (Constants.EnergyRegen * dt));
 
         return false;
+    }
+
+    private enum HeroDirection
+    {
+        Left,
+        Right,
+        None
     }
 }

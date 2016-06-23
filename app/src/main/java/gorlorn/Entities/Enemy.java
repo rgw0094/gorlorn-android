@@ -28,7 +28,7 @@ public class Enemy extends Entity
         //Check for collision with hero
         if (_gorlornActivity.Hero.testHit(this))
         {
-            //_gorlornActivity.Hero.dealDamage(Constants.EnemyDamage);
+            _gorlornActivity.Hero.dealDamage(Constants.EnemyDamage);
             return true;
         }
 

@@ -37,7 +37,7 @@ public class Background
         _gorlorn = gorlornActivity;
         _linePaint = new Paint();
         _linePaint.setARGB(255, 247, 33, 155);
-        _linePaint.setStrokeWidth(_gorlorn.getYFromPercent(0.005f));
+        _linePaint.setStrokeWidth(gorlornActivity.getYFromPercent(0.005f));
         _backgroundPaint = new Paint();
         _backgroundPaint.setARGB(255, 24, 20, 37);
 

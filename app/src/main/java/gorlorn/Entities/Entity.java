@@ -49,8 +49,8 @@ public class Entity
     {
         X += Vx * dt;
         Y += Vy * dt;
-        Vx = Math.min(MaxV, Vx + Ax * dt);
-        Vy = Math.min(MaxV, Vy + Ay * dt);
+        Vx = Math.max(-MaxV, Math.min(MaxV, Vx + Ax * dt));
+        Vy = Math.max(-MaxV, Math.min(MaxV, Vy + Ay * dt));
 
         _hitBox = new Rect((int) X, (int) Y, (int) X + Width, (int) Y + Height);
 

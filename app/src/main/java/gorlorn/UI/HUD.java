@@ -4,12 +4,17 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Point;
 import android.graphics.Rect;
+import android.support.v4.view.MotionEventCompat;
 import android.view.MotionEvent;
 
 import java.text.MessageFormat;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 import gorlorn.Entities.Points;
 import gorlorn.Constants;
@@ -26,25 +31,16 @@ public class HUD
     private GorlornActivity _gorlornActivity;
     private Rect _leftButtonHitBox;
     private Rect _rightButtonHitBox;
-    private Rect _fireButtonHitBox;
     private Bitmap _leftButtonSprite;
     private Bitmap _rightButtonSprite;
     private HealthBar _healthBar;
-    private HealthBar _energyBar;
     private LinkedList<Points> _points = new LinkedList<>();
-    private Paint _scorePaint;
+    public Paint _scorePaint;
     private Paint _highScorePaint;
-    private int _numPointersDown = 0;
-
-    private Paint _buttonBorderPaint;
-    private Paint _buttonBackgroundPaint;
-    private boolean _isMoveButtonDown;
-    private int _moveButtonIndex = -1;
-    private int _fireButtonIndex = -1;
+    private List<Pointer> _pointers = new LinkedList<Pointer>();
 
     private boolean _isLeftPressed;
     private boolean _isRightPressed;
-    private boolean _isFirePressed;
     private boolean _isPointerDown;
     private boolean _isClicked;
     private int _clickX;
@@ -60,22 +56,13 @@ public class HUD
     {
         _gorlornActivity = gorlornActivity;
 
+        //Set up the movement buttons
         int buttonHitBoxDiameter = gorlornActivity.getXFromPercent(Constants.ButtonDiameter);
         _leftButtonHitBox = new Rect(0, gorlornActivity.ScreenHeight - buttonHitBoxDiameter, buttonHitBoxDiameter, gorlornActivity.ScreenHeight);
-        //_rightButtonHitBox = new Rect(buttonHitBoxDiameter, gorlornActivity.ScreenHeight - buttonHitBoxDiameter, buttonHitBoxDiameter * 2, gorlornActivity.ScreenHeight);
         _rightButtonHitBox = new Rect(gorlornActivity.ScreenWidth - buttonHitBoxDiameter, gorlornActivity.ScreenHeight - buttonHitBoxDiameter, gorlornActivity.ScreenWidth, gorlornActivity.ScreenHeight);
-        _fireButtonHitBox = new Rect(gorlornActivity.ScreenWidth - buttonHitBoxDiameter, gorlornActivity.ScreenHeight - buttonHitBoxDiameter, gorlornActivity.ScreenWidth, gorlornActivity.ScreenHeight);
 
         _leftButtonSprite = gorlornActivity.createBitmapByWidthPercent(R.drawable.left_button, Constants.ButtonDiameter);
         _rightButtonSprite = gorlornActivity.createBitmapByWidthPercent(R.drawable.right_button, Constants.ButtonDiameter);
-
-        _buttonBorderPaint = new Paint();
-        _buttonBorderPaint.setAntiAlias(true);
-        _buttonBorderPaint.setARGB(255, 55, 55, 55);
-
-        _buttonBackgroundPaint = new Paint();
-        _buttonBackgroundPaint.setAntiAlias(true);
-        _buttonBackgroundPaint.setARGB(255, 22, 22, 22);
 
         //TODO: factory for this
         _scorePaint = new Paint();
@@ -104,14 +91,6 @@ public class HUD
 
         Paint energyPaint = new Paint();
         energyPaint.setARGB(255, 0, 224, 216);
-
-        _energyBar = new HealthBar(
-                Orientation.Horizontal,
-                _gorlornActivity.getXFromPercent(0.99f) - healthBarLength,
-                _gorlornActivity.getYFromPercent(0.02f) + healthBarThickness,
-                healthBarThickness,
-                healthBarLength,
-                energyPaint);
     }
 
     /**
@@ -128,14 +107,6 @@ public class HUD
     public boolean isRightPressed()
     {
         return _isRightPressed;
-    }
-
-    /**
-     * Gets whether or not the fire button is currently pressed;
-     */
-    public boolean isFirePressed()
-    {
-        return _isFirePressed;
     }
 
     /*
@@ -177,27 +148,19 @@ public class HUD
         if (_isClicked)
             _isClicked = false;
 
-        int index = me.getActionIndex();
+        int action = MotionEventCompat.getActionMasked(me);
+        int index = MotionEventCompat.getActionIndex(me);
+        int id = me.getPointerId(index);
         int x = (int) me.getX(index);
         int y = (int) me.getY(index);
 
-        switch (me.getActionMasked())
+        switch (action)
         {
             case MotionEvent.ACTION_DOWN:
             case MotionEvent.ACTION_POINTER_DOWN:
-                if (_leftButtonHitBox.contains(x, y) || _rightButtonHitBox.contains(x, y))
-                {
-                    _moveButtonIndex = index;
-                    _isMoveButtonDown = true;
-                }
-                else if (_fireButtonHitBox.contains(x, y))
-                {
-                    _fireButtonIndex = index;
-                    _isFirePressed = true;
-                }
-                _numPointersDown++;
+                _pointers.add(new Pointer(id, x, y));
 
-                if (_numPointersDown == 1 && !_isPointerDown)
+                if (_pointers.size() == 1 && !_isPointerDown)
                 {
                     _isClicked = true;
                     _clickX = x;
@@ -208,55 +171,47 @@ public class HUD
 
             case MotionEvent.ACTION_UP:
             case MotionEvent.ACTION_POINTER_UP:
-                if (index == _fireButtonIndex)
+                Pointer pointerToRemove = null;
+                for (Pointer pointer : _pointers)
                 {
-                    _isFirePressed = false;
-                    _fireButtonIndex = -1;
+                    if (pointer.id == id)
+                    {
+                        pointerToRemove = pointer;
+                        break;
+                    }
                 }
-                else if (index == _moveButtonIndex)
+                _pointers.remove(pointerToRemove);
+                break;
+
+            case MotionEvent.ACTION_MOVE:
+                for (Pointer pointer : _pointers)
                 {
-                    _isMoveButtonDown = false;
-                    _isLeftPressed = false;
-                    _isRightPressed = false;
-                    _moveButtonIndex = -1;
+                    if (pointer.id == id)
+                    {
+                        pointer.x = x;
+                        pointer.y = y;
+                    }
                 }
-                _numPointersDown--;
                 break;
         }
 
-        if (_isMoveButtonDown && index == _moveButtonIndex)
+        //Look at the latest pointer that's over a button
+        _isLeftPressed = false;
+        _isRightPressed = false;
+        if (_pointers.size() > 0)
         {
-            if (_leftButtonHitBox.contains(x, y))
+            Pointer latestPointer = _pointers.get(_pointers.size() - 1);
+            if (_leftButtonHitBox.contains(latestPointer.x, latestPointer.y))
             {
                 _isLeftPressed = true;
-                _isRightPressed = false;
             }
-            else if (_rightButtonHitBox.contains(x, y))
+            else if (_rightButtonHitBox.contains(latestPointer.x, latestPointer.y))
             {
-                _isLeftPressed = false;
                 _isRightPressed = true;
             }
-            else
-            {
-                _isRightPressed = false;
-                _isLeftPressed = false;
-            }
         }
 
-        _isPointerDown = _numPointersDown == 1;
-
-        //Extra check for multi-touch wackiness
-        if (_numPointersDown == 0)
-        {
-            _isMoveButtonDown = false;
-            _isFirePressed = false;
-            _isLeftPressed = false;
-            _isRightPressed = false;
-            _fireButtonIndex = -1;
-            _moveButtonIndex = -1;
-        }
-
-        _isFirePressed = true;
+        _isPointerDown = _pointers.size() == 1;
     }
 
     /**
@@ -301,14 +256,12 @@ public class HUD
 
         drawButton(canvas, _leftButtonSprite, _leftButtonHitBox);
         drawButton(canvas, _rightButtonSprite, _rightButtonHitBox);
-        //drawButton(canvas, _leftButtonSprite, _fireButtonHitBox);
 
         if (_gorlornActivity.IsDebugMode)
         {
             //Show button states
-            canvas.drawText(MessageFormat.format("Left  {0} {1}", _isLeftPressed ? "D" : "U", _moveButtonIndex), 10, 400, _scorePaint);
-            canvas.drawText(MessageFormat.format("Right {0} {1}", _isRightPressed ? "D" : "U", _moveButtonIndex), 10, 450, _scorePaint);
-            canvas.drawText(MessageFormat.format("Fire  {0} {1}", _isFirePressed ? "D" : "U", _fireButtonIndex), 10, 500, _scorePaint);
+            canvas.drawText(MessageFormat.format("Left  {0}", _isLeftPressed ? "D" : "U"), 10, 400, _scorePaint);
+            canvas.drawText(MessageFormat.format("Right {0}", _isRightPressed ? "D" : "U"), 10, 460, _scorePaint);
         }
 
         for (Points points : _points)
@@ -317,7 +270,6 @@ public class HUD
         }
 
         _healthBar.draw(canvas, _gorlornActivity.Hero.getHealthPercent());
-        //_energyBar.draw(canvas, _gorlornActivity.Hero.getEnergyPercent());
     }
 
     /**
@@ -329,14 +281,22 @@ public class HUD
      */
     private void drawButton(Canvas canvas, Bitmap sprite, Rect box)
     {
-//        canvas.drawRect(box, _buttonBorderPaint);
-//        canvas.drawLine(box.left, box.top, box.right, box.top, _buttonBorderPaint);
-//        canvas.drawLine(box.right, box.top, box.right, box.bottom, _buttonBorderPaint);
-//        canvas.drawLine(box.right, box.bottom, box.left, box.bottom, _buttonBorderPaint);
-//        canvas.drawLine(box.left, box.bottom, box.left, box.top, _buttonBorderPaint);
-
         int x = (int) (box.left + ((box.width() - sprite.getWidth()) * 0.5f));
         int y = (int) (box.top + ((box.height() - sprite.getHeight()) * 0.5f));
         canvas.drawBitmap(sprite, x, y, null);
+    }
+
+    private class Pointer
+    {
+        public Pointer(int id, int x, int y)
+        {
+            this.id = id;
+            this.x = x;
+            this.y = y;
+        }
+
+        public int id;
+        public int x;
+        public int y;
     }
 }
