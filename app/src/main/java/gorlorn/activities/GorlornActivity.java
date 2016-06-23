@@ -10,6 +10,7 @@ import android.graphics.Rect;
 import android.os.Bundle;
 import android.view.Display;
 import android.view.MotionEvent;
+import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 
@@ -50,8 +51,6 @@ public class GorlornActivity extends GameLoopActivity
     public EnemyManager EnemyManager;
     public BulletManager BulletManager;
     public HeartManager HeartManager;
-    public int ScreenWidth;
-    public int ScreenHeight;
     public boolean IsDebugMode = false;
     public long Score = 0;
     public long HighScore = 0;
@@ -65,27 +64,33 @@ public class GorlornActivity extends GameLoopActivity
 
     //region GameLoopActivity Overrides
 
+//    @Override
+//    protected void onCreate(Bundle savedInstanceState)
+//    {
+//        super.onCreate(savedInstanceState);
+//
+//        requestWindowFeature(Window.FEATURE_NO_TITLE);
+//
+//        Window window = getWindow();
+//        window.setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+//        window.setFlags(WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM, WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM);
+//
+//        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+//
+//        GameLoopView view = new GameLoopView(this);
+//        setContentView(view);
+//
+//        Display display = getWindowManager().getDefaultDisplay();
+//        Point size = new Point();
+//        display.getSize(size);
+//        ScreenWidth = size.x;
+//        ScreenHeight = size.y;
+//    }
+
     @Override
-    protected void onCreate(Bundle savedInstanceState)
+    public View getActivityView()
     {
-        super.onCreate(savedInstanceState);
-
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
-
-        Window window = getWindow();
-        window.setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        window.setFlags(WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM, WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM);
-
-        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-
-        GameLoopView view = new GameLoopView(this);
-        setContentView(view);
-
-        Display display = getWindowManager().getDefaultDisplay();
-        Point size = new Point();
-        display.getSize(size);
-        ScreenWidth = size.x;
-        ScreenHeight = size.y;
+        return new GameLoopView(this);
     }
 
     @Override
@@ -168,56 +173,6 @@ public class GorlornActivity extends GameLoopActivity
     {
         _deathScreen = null;
         Initialize();
-    }
-
-    /**
-     * Creates a bitmap sized as a percentage of the screen.
-     *
-     * @param id
-     * @param screenWidthPercent
-     * @return
-     */
-    public Bitmap createBitmapByWidthPercent(int id, float screenWidthPercent)
-    {
-        Resources resources = getApplicationContext().getResources();
-        int diameter = getXFromPercent(screenWidthPercent);
-        return Bitmap.createScaledBitmap(BitmapFactory.decodeResource(resources, id), diameter, diameter, true);
-    }
-
-    /**
-     * Creates a bitmap sized by absolute pixel count.
-     *
-     * @param id
-     * @param width
-     * @param height
-     * @return
-     */
-    public Bitmap createBitmap(int id, int width, int height)
-    {
-        Resources resources = getApplicationContext().getResources();
-        return Bitmap.createScaledBitmap(BitmapFactory.decodeResource(resources, id), width, height, true);
-    }
-
-    /**
-     * Gets the x pixel coordinate that is the given percent across the screen.
-     *
-     * @param percent
-     * @return
-     */
-    public int getXFromPercent(float percent)
-    {
-        return (int) ((float) ScreenWidth * percent);
-    }
-
-    /**
-     * Gets the y pixel coordinate that is the given percent across the screen.
-     *
-     * @param percent
-     * @return
-     */
-    public int getYFromPercent(float percent)
-    {
-        return (int) ((float) ScreenHeight * percent);
     }
 
     /**
