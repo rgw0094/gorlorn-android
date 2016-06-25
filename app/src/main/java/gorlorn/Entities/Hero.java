@@ -5,8 +5,10 @@ import android.graphics.Canvas;
 import java.text.MessageFormat;
 import java.util.Date;
 
+import gorlorn.Bitmaps;
 import gorlorn.Constants;
 import gorlorn.Gorlorn;
+import gorlorn.UI.HeroSummonEffect;
 import gorlorn.activities.GorlornActivity;
 import gorlorn.activities.R;
 
@@ -31,7 +33,7 @@ public class Hero extends Entity
      */
     public Hero(Gorlorn gorlorn)
     {
-        super(gorlorn.createBitmapByWidthPercent(R.drawable.hero, Constants.HeroDiameter));
+        super(Bitmaps.Hero);
 
         _gorlorn = gorlorn;
         _speed = (float) _gorlorn.ScreenWidth * Constants.HeroSpeed;

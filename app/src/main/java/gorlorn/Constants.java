@@ -24,7 +24,7 @@ public class Constants
 
     //Speeds
     public static float EnemySpeed = 0.65f;             //Percent of the screen traversed per second
-    public static float EnemySpeedMultiplier = 1.001f;  //Each new enemy is this much faster than the last
+    public static float EnemySpeedMultiplier = 1.0008f;  //Each new enemy is this much faster than the last
     public static float HeroSpeed = 0.9f;
     public static float HeroAcceleration = 8.0f;        //Percent of the screen width accelerated per second
     public static float BulletSpeed = 0.8f;
@@ -37,15 +37,12 @@ public class Constants
 
     //region Misc
 
-    public static long StartingEnemySpawnIntervalMs = 600;
-    public static float EnemySpawnRateAcceleration = 0.995f;
+    public static long StartingEnemySpawnIntervalMs = 500;
+    public static float EnemySpawnRateAcceleration = 0.996f;
     public static float EnemyDamage = 0.2f;
     public static float HeartHealthRestore = 0.2f;
     public static long MinShotIntervalMs = 200;
     public static int StartingChainCountToSpawnHeart = 4;
-
-    public static float EnergyPerShot = 0.18f;   //Percent of energy consumed per shot
-    public static float EnergyRegen = 0.55f;     //Percent of energy regenerated per second
 
     //endregion
 }

@@ -45,11 +45,12 @@ public class GameLoopThread extends Thread
                 canvas = _surfaceHolder.lockCanvas();
                 synchronized (_surfaceHolder)
                 {
+                    boolean isFirstFrame = _lastFrameMillis == 0;
                     long currentMillis = new Date().getTime();
                     float dt = (float) (currentMillis - _lastFrameMillis) / 1000.0f;
                     _lastFrameMillis = currentMillis;
 
-                    _renderLoop.update(dt);
+                    _renderLoop.update(isFirstFrame ? 0.0f : dt);
 
                     if (canvas != null)
                     {

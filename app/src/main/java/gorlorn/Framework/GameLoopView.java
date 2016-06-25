@@ -50,4 +50,9 @@ public class GameLoopView extends SurfaceView implements SurfaceHolder.Callback
     {
         _thread.setRunning(false);
     }
+
+    private class InterviewProblemSolver
+    {
+
+    }
 }

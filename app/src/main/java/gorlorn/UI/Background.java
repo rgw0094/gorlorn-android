@@ -5,6 +5,7 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Rect;
 
+import gorlorn.Bitmaps;
 import gorlorn.Framework.RenderLoopBase;
 import gorlorn.activities.R;
 
@@ -17,40 +18,31 @@ public class Background
 {
     private static int NumPoints = 10;
 
-    private Bitmap _backgroundBitmap;
-    private Bitmap _titleBitmap;
+    //Hacks!
+    private static float _backgroundXOffset;
+    private static float _backgroundYOffset;
+    private static float _horizontalLinesOffset;
+
     private RenderLoopBase _renderLoop;
     private Paint _linePaint;
     private float[] _horizontalLineStarts = new float[NumPoints];
-    private float _backgroundXOffset;
-    private float _backgroundYOffset;
     private float _time;
-    private boolean _drawTitle;
 
     /**
      * Constructs a new Background.
      *
      * @param renderLoop
      */
-    public Background(RenderLoopBase renderLoop, boolean drawTitle)
+    public Background(RenderLoopBase renderLoop)
     {
         _renderLoop = renderLoop;
-        _drawTitle = drawTitle;
         _linePaint = new Paint();
         _linePaint.setARGB(255, 247, 33, 155);
         _linePaint.setStrokeWidth(_renderLoop.getYFromPercent(0.005f));
-        _backgroundBitmap = _renderLoop.createBitmap(R.drawable.space, _renderLoop.getXFromPercent(1.1f), _renderLoop.getYFromPercent(1.1f));
 
         for (int i = 0; i < NumPoints; i++)
         {
             _horizontalLineStarts[i] = _renderLoop.getXFromPercent((1.0f / (float) NumPoints) * (float) i);
-        }
-
-        if (_drawTitle)
-        {
-            int titleWidth = renderLoop.getXFromPercent(0.7f);
-            int titleHeight = renderLoop.getYFromPercent(0.7f / 4.347826086956522f);
-            _titleBitmap = renderLoop.createBitmap(R.drawable.title, titleWidth, titleHeight);
         }
     }
 
@@ -67,11 +59,7 @@ public class Background
 
         _backgroundXOffset = (float) _renderLoop.getXFromPercent(0.05f) * (float) Math.cos(_time / 2.0f) - (float) _renderLoop.getXFromPercent(0.05f);
         _backgroundYOffset = (float) _renderLoop.getYFromPercent(0.05f) * (float) Math.sin(_time / 2.0f) - (float) _renderLoop.getYFromPercent(0.05f);
-
-        for (int i = 0; i < NumPoints; i++)
-        {
-            _horizontalLineStarts[i] = (_horizontalLineStarts[i] + speed * dt) % width;
-        }
+        _horizontalLinesOffset += (speed * dt);
     }
 
     /**
@@ -81,12 +69,7 @@ public class Background
      */
     public void draw(Canvas canvas)
     {
-        canvas.drawBitmap(_backgroundBitmap, _backgroundXOffset, _backgroundYOffset, null);
-
-        if (_drawTitle)
-        {
-            canvas.drawBitmap(_titleBitmap, _renderLoop.getXFromPercent(0.15f), _renderLoop.getYFromPercent(0.15f), null);
-        }
+        canvas.drawBitmap(Bitmaps.Background, _backgroundXOffset, _backgroundYOffset, null);
 
         float topY = _renderLoop.getYFromPercent(0.45f);
 
@@ -94,10 +77,10 @@ public class Background
         float centerX = _renderLoop.ScreenWidth * 0.5f;
         for (int i = 0; i < NumPoints; i++)
         {
-            float distFromCenter = centerX - _horizontalLineStarts[i];
+            float lineStart = (_horizontalLineStarts[i] + _horizontalLinesOffset) % _renderLoop.ScreenWidth;
+            float distFromCenter = centerX - lineStart;
             float bottomX = centerX - (distFromCenter * 3.2f);
-
-            canvas.drawLine(_horizontalLineStarts[i], topY, bottomX, _renderLoop.ScreenHeight, _linePaint);
+            canvas.drawLine(lineStart, topY, bottomX, _renderLoop.ScreenHeight, _linePaint);
         }
 
         //Draw the horizontal lines

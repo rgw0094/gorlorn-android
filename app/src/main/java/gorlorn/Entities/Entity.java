@@ -18,13 +18,13 @@ public class Entity
     protected long _timeStartedBlinkingMs;
     private int _blinkDurationMs;
     private float _blinkOpacityDelta;
-    private float _opacity = 1.0f;
 
     public Bitmap Sprite;
     public float X;
     public float Y;
     public int Width;
     public int Height;
+    public float Opacity;
     public float Vx;
     public float Vy;
     public float MaxV = Float.MAX_VALUE;
@@ -36,6 +36,7 @@ public class Entity
         Sprite = sprite;
         Width = sprite.getWidth();
         Height = sprite.getWidth();
+        Opacity = 1.0f;
         _hitBox = new Rect(0, 0, 0, 0);
     }
 
@@ -58,20 +59,20 @@ public class Entity
         {
             if (new Date().getTime() >= _timeStartedBlinkingMs + _blinkDurationMs)
             {
-                _opacity = 1.0f;
+                Opacity = 1.0f;
                 _isBlinking = false;
             }
             else
             {
-                _opacity += dt * _blinkOpacityDelta;
-                if (_opacity >= 1.0)
+                Opacity += dt * _blinkOpacityDelta;
+                if (Opacity >= 1.0)
                 {
-                    _opacity = 1.0f;
+                    Opacity = 1.0f;
                     _blinkOpacityDelta *= -1;
                 }
-                else if (_opacity <= 0.0d)
+                else if (Opacity <= 0.0d)
                 {
-                    _opacity = 0.0f;
+                    Opacity = 0.0f;
                     _blinkOpacityDelta *= -1;
                 }
             }
@@ -88,10 +89,10 @@ public class Entity
     public void draw(Canvas canvas)
     {
         Paint paint = null;
-        if (_opacity != 1.0f)
+        if (Opacity != 1.0f)
         {
             paint = new Paint();
-            paint.setARGB((int) (255.0f * _opacity), 255, 255, 255);
+            paint.setARGB((int) (255.0f * Opacity), 255, 255, 255);
         }
 
         canvas.drawBitmap(Sprite, X - (float) Width / 2.0f, Y - (float) Height / 2.0f, paint);

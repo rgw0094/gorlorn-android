@@ -13,10 +13,11 @@ import gorlorn.Framework.RenderLoopBase;
 import gorlorn.UI.Background;
 import gorlorn.UI.DeathScreen;
 import gorlorn.UI.HUD;
+import gorlorn.UI.HeroSummonEffect;
 
 /**
  * The Gorlorn game.
- *
+ * <p/>
  * Created by Rob on 6/22/2016.
  */
 public class Gorlorn extends RenderLoopBase
@@ -26,6 +27,7 @@ public class Gorlorn extends RenderLoopBase
     private boolean _isInitialized;
     private Background _background;
     private DeathScreen _deathScreen;
+    private HeroSummonEffect _heroSummonEffect;
 
     //endregion
 
@@ -94,6 +96,17 @@ public class Gorlorn extends RenderLoopBase
         {
             Initialize();
             _isInitialized = true;
+            return;
+        }
+
+        if (_heroSummonEffect != null)
+        {
+            _background.update(dt);
+            if (_heroSummonEffect.update(dt))
+            {
+                //The summon effect is complete!
+                _heroSummonEffect = null;
+            }
         }
         else if (_deathScreen != null)
         {
@@ -122,8 +135,15 @@ public class Gorlorn extends RenderLoopBase
         _background.draw(canvas);
         BulletManager.Draw(canvas);
         EnemyManager.draw(canvas);
-        Hud.draw(canvas);
-        Hero.draw(canvas);
+        if (_heroSummonEffect != null)
+        {
+            _heroSummonEffect.draw(canvas);
+        }
+        else
+        {
+            Hud.draw(canvas);
+            Hero.draw(canvas);
+        }
         HeartManager.draw(canvas);
 
         if (_deathScreen != null)
@@ -158,13 +178,14 @@ public class Gorlorn extends RenderLoopBase
     {
         Score = 0;
 
-        _background = new Background(this, false);
+        _background = new Background(this);
         Hero = new Hero(this);
-        if (Hud == null) //Don't re-initialize the HUD since it will mess up the input logic
+        if (Hud == null)        //Don't re-initialize the HUD since it will mess up the input logic
             Hud = new HUD(this);
         EnemyManager = new EnemyManager(this);
         BulletManager = new BulletManager(this);
         HeartManager = new HeartManager(this);
+        _heroSummonEffect = new HeroSummonEffect(this);
     }
 
     //endregion

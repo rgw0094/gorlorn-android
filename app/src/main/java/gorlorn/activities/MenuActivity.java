@@ -20,6 +20,7 @@ import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.MobileAds;
 
+import gorlorn.Bitmaps;
 import gorlorn.Framework.GameLoopView;
 import gorlorn.Framework.RenderLoopBase;
 import gorlorn.UI.Background;
@@ -94,7 +95,7 @@ public class MenuActivity extends Activity
         //AdRequest adRequest = new AdRequest.Builder().build();
         AdRequest adRequest = new AdRequest.Builder()
                 .addTestDevice(AdRequest.DEVICE_ID_EMULATOR)        // All emulators
-                .addTestDevice("B002DA6CED0109ADA1321B29C4DEE7B1")  // An example device ID
+                .addTestDevice("B002DA6CED0109ADA1321B29C4DEE7B1")
                 .build();
         mAdView.loadAd(adRequest);
     }
@@ -116,9 +117,11 @@ public class MenuActivity extends Activity
         @Override
         public void update(float dt)
         {
+            Bitmaps.Load(this);
+
             if (_background == null)
             {
-                _background = new Background(this, true);
+                _background = new Background(this);
             }
             else
             {
@@ -132,6 +135,7 @@ public class MenuActivity extends Activity
             if (_background != null)
             {
                 _background.draw(canvas);
+                canvas.drawBitmap(Bitmaps.Title, getXFromPercent(0.15f), getYFromPercent(0.15f), null);
             }
         }
 

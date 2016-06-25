@@ -11,46 +11,55 @@
                 tools:context="gorlorn.activities.MenuActivity"
                 tools:ignore="UselessParent">
 
-    <ImageView
-        android:id="@+id/backgroundView"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:scaleType="fitXY" />
-
     <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:orientation="vertical"
         android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"
-        android:orientation="vertical">
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent">
 
-        <Button
-            android:id="@+id/playButton"
-            style="?metaButtonBarButtonStyle"
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="7" />
+
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical|center_horizontal"
-            android:layout_weight="1"
-            android:onClick="startGame"
-            android:text="Play"/>
+            android:orientation="vertical">
 
-        <Button
-            android:id="@+id/leaderboardButton"
-            style="?metaButtonBarButtonStyle"
-            android:text="Leaderboard"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:onClick="viewLeaderboard"
-            android:layout_gravity="center_vertical|center_horizontal"/>
+            <Button
+                android:id="@+id/playButton"
+                style="?metaButtonBarButtonStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical|center_horizontal"
+                android:layout_weight="1"
+                android:onClick="startGame"
+                android:text="Play"/>
 
-        <Button
-            android:id="@+id/quitButton"
-            style="?metaButtonBarButtonStyle"
-            android:text="Quit"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:onClick="quit"
-            android:layout_gravity="center_vertical|center_horizontal"/>
+            <Button
+                android:id="@+id/leaderboardButton"
+                style="?metaButtonBarButtonStyle"
+                android:text="Leaderboard"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:onClick="viewLeaderboard"
+                android:layout_gravity="center_vertical|center_horizontal"/>
+
+            <Button
+                android:id="@+id/quitButton"
+                style="?metaButtonBarButtonStyle"
+                android:text="Quit"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:onClick="quit"
+                android:layout_gravity="center_vertical|center_horizontal"/>
+        </LinearLayout>
+
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="2" />
     </LinearLayout>
 
     <com.google.android.gms.ads.AdView
