@@ -4,7 +4,6 @@ import android.graphics.Bitmap;
 
 import gorlorn.Constants;
 import gorlorn.Gorlorn;
-import gorlorn.activities.GorlornActivity;
 
 /**
  * Created by Rob on 1/14/2016.

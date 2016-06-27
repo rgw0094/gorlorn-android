@@ -5,7 +5,6 @@ import android.graphics.Canvas;
 import android.graphics.Rect;
 
 import gorlorn.Gorlorn;
-import gorlorn.activities.GorlornActivity;
 
 /**
  * A button!

@@ -11,7 +11,9 @@
                 tools:context="gorlorn.activities.MenuActivity"
                 tools:ignore="UselessParent">
 
+    <!--Buttons-->
     <LinearLayout
+        android:id="@+id/buttonsView"
         android:orientation="vertical"
         android:layout_centerHorizontal="true"
         android:layout_width="wrap_content"
@@ -59,7 +61,7 @@
         <Space
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="2" />
+            android:layout_weight="3" />
     </LinearLayout>
 
     <com.google.android.gms.ads.AdView

@@ -8,7 +8,6 @@ import java.util.LinkedList;
 import gorlorn.Entities.Bullet;
 import gorlorn.Entities.Enemy;
 import gorlorn.Entities.Entity;
-import gorlorn.activities.GorlornActivity;
 import gorlorn.activities.R;
 
 /**

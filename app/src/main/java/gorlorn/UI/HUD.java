@@ -16,7 +16,6 @@ import java.util.List;
 import gorlorn.Entities.Points;
 import gorlorn.Constants;
 import gorlorn.Gorlorn;
-import gorlorn.activities.GorlornActivity;
 import gorlorn.activities.R;
 
 /**

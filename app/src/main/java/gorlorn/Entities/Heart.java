@@ -4,7 +4,6 @@ import android.graphics.Bitmap;
 
 import gorlorn.Constants;
 import gorlorn.Gorlorn;
-import gorlorn.activities.GorlornActivity;
 
 /**
  * A heart that restores the hero's health.

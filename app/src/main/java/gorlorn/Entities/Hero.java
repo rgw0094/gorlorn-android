@@ -8,9 +8,6 @@ import java.util.Date;
 import gorlorn.Bitmaps;
 import gorlorn.Constants;
 import gorlorn.Gorlorn;
-import gorlorn.UI.HeroSummonEffect;
-import gorlorn.activities.GorlornActivity;
-import gorlorn.activities.R;
 
 /**
  * Represents the hero that must slay the evil monsters

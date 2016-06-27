@@ -7,7 +7,6 @@ import java.util.Iterator;
 import java.util.LinkedList;
 
 import gorlorn.Entities.Heart;
-import gorlorn.activities.GorlornActivity;
 import gorlorn.activities.R;
 
 /**

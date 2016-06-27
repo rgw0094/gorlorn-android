@@ -7,7 +7,6 @@ import java.text.MessageFormat;
 import java.util.Date;
 
 import gorlorn.Gorlorn;
-import gorlorn.activities.GorlornActivity;
 
 /**
  * Displays the number of points gained from killing an enemy to the user.

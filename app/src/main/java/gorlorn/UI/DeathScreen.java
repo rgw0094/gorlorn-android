@@ -1,17 +1,14 @@
 package gorlorn.UI;
 
-import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.ColorFilter;
 import android.graphics.LightingColorFilter;
 import android.graphics.Paint;
-import android.graphics.Rect;
 
 import java.util.Date;
 
 import gorlorn.Gorlorn;
-import gorlorn.activities.GorlornActivity;
 import gorlorn.activities.R;
 
 /**
@@ -91,7 +88,7 @@ public class DeathScreen
             _tryAgainButton.update();
             if (_tryAgainButton.isClicked())
             {
-                _gorlorn.newGame();
+                _gorlorn.startGame();
             }
         }
     }

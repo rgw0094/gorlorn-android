@@ -6,7 +6,6 @@ import android.graphics.Rect;
 import java.util.Date;
 
 import gorlorn.Gorlorn;
-import gorlorn.activities.GorlornActivity;
 
 /**
  * Created by Rob on 1/14/2016.

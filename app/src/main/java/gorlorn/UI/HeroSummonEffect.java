@@ -22,7 +22,7 @@ public class HeroSummonEffect
     }
 
     private Gorlorn _gorlorn;
-    private Phase _phase = Phase.FadeOutTitle;
+    private Phase _phase;
     private float _titleOpacity = 1.0f;
     private float _heroOpacity;
     private float _beamWidth;
@@ -36,11 +36,22 @@ public class HeroSummonEffect
     /**
      * Constructs a new HeroSummonEffect.
      *
-     * @param renderLoop The RenderLoop that is drawing this object.
+     * @param renderLoop        The RenderLoop that is drawing this object.
+     * @param comingFromMenu    True if the hero is being summoned after coming from the menu, as opposed to the death screen.
      */
-    public HeroSummonEffect(Gorlorn renderLoop)
+    public HeroSummonEffect(Gorlorn renderLoop, boolean comingFromMenu)
     {
         _gorlorn = renderLoop;
+
+        if (comingFromMenu)
+        {
+            //If we are coming from the menu, we will phase out the title graphic for a smoother transition
+            _phase = Phase.FadeOutTitle;
+        }
+        else
+        {
+            _phase = Phase.BeamDescending;
+        }
 
         _beamSpeed = (float) _gorlorn.getYFromPercent(6.0f);
         _beamWidth = renderLoop.getXFromPercent(0.1f);

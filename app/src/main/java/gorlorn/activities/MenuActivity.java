@@ -1,29 +1,22 @@
 package gorlorn.activities;
 
 import android.app.Activity;
-import android.content.Intent;
 import android.content.pm.ActivityInfo;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Canvas;
-import android.graphics.Point;
 import android.os.Bundle;
-import android.view.Display;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.MobileAds;
 
-import gorlorn.Bitmaps;
 import gorlorn.Framework.GameLoopView;
-import gorlorn.Framework.RenderLoopBase;
-import gorlorn.UI.Background;
+import gorlorn.Gorlorn;
+import gorlorn.UI.GorlornScreen;
+
+//ROBTODO: rename to GorlornActivity
 
 /**
  * Activity for the menu that dislpays when the game first starts.
@@ -32,7 +25,7 @@ public class MenuActivity extends Activity
 {
     //region Private Variables
 
-    private Background _background;
+    private Gorlorn _gorlorn;
 
     //endregion
 
@@ -55,7 +48,9 @@ public class MenuActivity extends Activity
 
         RelativeLayout root = (RelativeLayout) findViewById(R.id.menu_layout);
 
-        root.addView(new GameLoopView(new MenuRenderLoop(this)), 0,
+        _gorlorn = new Gorlorn(this);
+
+        root.addView(new GameLoopView(_gorlorn), 0,
                 new WindowManager.LayoutParams(
                         RelativeLayout.LayoutParams.MATCH_PARENT,
                         RelativeLayout.LayoutParams.MATCH_PARENT));
@@ -67,10 +62,18 @@ public class MenuActivity extends Activity
 
     //region Public Methods
 
+    @Override
+    public void onBackPressed()
+    {
+        if (_gorlorn.getCurrentScreen() != GorlornScreen.Menu)
+        {
+            _gorlorn.showMenu();
+        }
+    }
+
     public void startGame(View view)
     {
-        Intent intent = new Intent(this, GorlornActivity.class);
-        startActivity(intent);
+        _gorlorn.startGame();
     }
 
     public void viewLeaderBoard(View view)
@@ -101,47 +104,4 @@ public class MenuActivity extends Activity
     }
 
     //endregion
-
-    private class MenuRenderLoop extends RenderLoopBase
-    {
-        public MenuRenderLoop(Activity activity)
-        {
-            super(activity);
-        }
-
-        @Override
-        public void handleInputEvent(MotionEvent me)
-        {
-        }
-
-        @Override
-        public void update(float dt)
-        {
-            Bitmaps.Load(this);
-
-            if (_background == null)
-            {
-                _background = new Background(this);
-            }
-            else
-            {
-                _background.update(dt);
-            }
-        }
-
-        @Override
-        public void draw(Canvas canvas)
-        {
-            if (_background != null)
-            {
-                _background.draw(canvas);
-                canvas.drawBitmap(Bitmaps.Title, getXFromPercent(0.15f), getYFromPercent(0.15f), null);
-            }
-        }
-
-        @Override
-        public void handleException(Exception e)
-        {
-        }
-    }
 }
