@@ -1,12 +1,9 @@
 package gorlorn;
 
-import android.app.Activity;
 import android.graphics.Canvas;
 import android.view.MotionEvent;
 import android.view.View;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.util.Random;
 
 import gorlorn.Entities.Hero;
@@ -16,7 +13,7 @@ import gorlorn.UI.DeathScreen;
 import gorlorn.UI.GorlornScreen;
 import gorlorn.UI.HUD;
 import gorlorn.UI.HeroSummonEffect;
-import gorlorn.activities.MenuActivity;
+import gorlorn.activities.GorlornActivity;
 import gorlorn.activities.R;
 
 /**
@@ -28,7 +25,7 @@ public class Gorlorn extends RenderLoopBase
 {
     //region Private Variables
 
-    private MenuActivity _activity;
+    private GorlornActivity _activity;
     private GorlornScreen _screen;
     private Background _background;
     private DeathScreen _deathScreen;
@@ -39,7 +36,7 @@ public class Gorlorn extends RenderLoopBase
 
     //region Constructors
 
-    public Gorlorn(MenuActivity activity)
+    public Gorlorn(GorlornActivity activity)
     {
         super(activity);
 

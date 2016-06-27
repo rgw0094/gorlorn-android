@@ -21,7 +21,7 @@ import gorlorn.UI.GorlornScreen;
 /**
  * Activity for the menu that dislpays when the game first starts.
  */
-public class MenuActivity extends Activity
+public class GorlornActivity extends Activity
 {
     //region Private Variables
 

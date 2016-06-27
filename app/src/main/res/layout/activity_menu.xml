@@ -8,7 +8,7 @@
                 android:layout_gravity="center_vertical|center_horizontal"
                 android:background="@color/black_overlay"
                 android:orientation="vertical"
-                tools:context="gorlorn.activities.MenuActivity"
+                tools:context=".GorlornActivity"
                 tools:ignore="UselessParent">
 
     <!--Buttons-->
