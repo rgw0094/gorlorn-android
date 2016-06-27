@@ -55,10 +55,10 @@ public class BulletManager
             Enemy killedEnemy = _gorlorn.EnemyManager.TryKillEnemy(bullet);
             if (killedEnemy != null)
             {
-                _gorlorn.Hud.addPoints(bullet.X, bullet.Y, bullet.ChainCount);
+                _gorlorn.Hud.addPoints(bullet.X, bullet.Y, bullet.getChainCount());
                 deadBullets.add(bullet);
 
-                if (bullet.ChainCount > _chainCountToSpawnHeart)
+                if (bullet.getChainCount() > _chainCountToSpawnHeart)
                 {
                     _gorlorn.HeartManager.spawnHeart((int) bullet.X, (int) bullet.Y);
                     _chainCountToSpawnHeart++;
@@ -68,7 +68,7 @@ public class BulletManager
                 for (int i = 0; i < 3; i++)
                 {
                     double angle = _gorlorn.Random.nextDouble() * Math.PI * 2.0;
-                    newBullets.add(new Bullet(_gorlorn, _projectileSprite, killedEnemy.X, killedEnemy.Y, _speed, angle, bullet.ChainCount + 1, Constants.ChainBulletLifeTimeMs));
+                    newBullets.add(new Bullet(_gorlorn, _projectileSprite, killedEnemy.X, killedEnemy.Y, _speed, angle, bullet.getChainCount() + 1, Constants.ChainBulletLifeTimeMs));
                 }
             }
         }

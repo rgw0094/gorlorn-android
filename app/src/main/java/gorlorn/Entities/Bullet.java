@@ -15,8 +15,7 @@ public class Bullet extends Entity
     private Gorlorn _gorlorn;
     private long _lifeTimeMs;
     private long _createdTimeMs;
-
-    public int ChainCount;
+    private int _chainCount;
 
     /**
      * Constructs a bullet that will dissapear after the specified number of milliseconds.
@@ -27,13 +26,33 @@ public class Bullet extends Entity
 
         _gorlorn = gorlorn;
         _lifeTimeMs = lifetimeMs;
-        ChainCount = chainCount;
+        _chainCount = chainCount;
         _createdTimeMs = new Date().getTime();
 
         X = x;
         Y = y;
         Vx = speed * (float) Math.cos(angle);
         Vy = speed * (float) Math.sin(angle);
+    }
+
+    /**
+     * Returns whether or not this bullet was created as part of a chain reaction, as opposed to being fired
+     * by the player.
+     *
+     * @return
+     */
+    public boolean isChainBullet()
+    {
+        return _chainCount > 1;
+    }
+
+    /**
+     * Gets the "chain count" for this bullet.
+     * @return
+     */
+    public int getChainCount()
+    {
+        return _chainCount;
     }
 
     @Override

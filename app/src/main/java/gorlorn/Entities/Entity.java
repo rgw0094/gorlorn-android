@@ -15,6 +15,7 @@ public class Entity
 {
     protected Rect _hitBox;
     private boolean _isBlinking;
+    private long _timeCreatedMs;
     protected long _timeStartedBlinkingMs;
     private int _blinkDurationMs;
     private float _blinkOpacityDelta;
@@ -33,6 +34,7 @@ public class Entity
 
     public Entity(Bitmap sprite)
     {
+        _timeCreatedMs = new Date().getTime();
         Sprite = sprite;
         Width = sprite.getWidth();
         Height = sprite.getWidth();
@@ -96,6 +98,25 @@ public class Entity
         }
 
         canvas.drawBitmap(Sprite, X - (float) Width / 2.0f, Y - (float) Height / 2.0f, paint);
+    }
+
+    /**
+     * Gets the time this Entity was created in milliseconds from the origin.
+     * @return
+     */
+    public long getTimeCreatedMs()
+    {
+        return _timeCreatedMs;
+    }
+
+    /**
+     * Returns whether or not this entity is older than the given entity.
+     * @param entity
+     * @return
+     */
+    public boolean isOlderThan(Entity entity)
+    {
+        return _timeCreatedMs < entity.getTimeCreatedMs();
     }
 
     /**

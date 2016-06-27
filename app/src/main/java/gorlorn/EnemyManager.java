@@ -7,6 +7,7 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.Random;
 
+import gorlorn.Entities.Bullet;
 import gorlorn.Entities.Enemy;
 import gorlorn.Entities.Entity;
 import gorlorn.activities.R;
@@ -38,11 +39,13 @@ public class EnemyManager
      * @param bullet
      * @return
      */
-    public Enemy TryKillEnemy(Entity bullet)
+    public Enemy TryKillEnemy(Bullet bullet)
     {
         for (Enemy enemy : _enemies)
         {
-            if (enemy.testHit(bullet))
+            //Don't let a bullet kill an enemy if its a chain reaction that spawned before the enemy,
+            //in order to prevent an endless chain reaction once there's a ton of enemies
+            if (!(bullet.isChainBullet() && bullet.isOlderThan(enemy)) && enemy.testHit(bullet))
             {
                 _enemies.remove(enemy);
                 return enemy;
