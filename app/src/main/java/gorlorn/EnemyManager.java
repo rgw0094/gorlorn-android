@@ -47,6 +47,7 @@ public class EnemyManager
             //in order to prevent an endless chain reaction once there's a ton of enemies
             if (!(bullet.isChainBullet() && bullet.isOlderThan(enemy)) && enemy.testHit(bullet))
             {
+                _gorlorn.getGameStats().enemiesVanquished++;
                 _enemies.remove(enemy);
                 return enemy;
             }
@@ -55,9 +56,9 @@ public class EnemyManager
     }
 
     /**
-     * Draws the BulletManager
+     * Draws the _bulletManager
      *
-     * @param canvas The canvas upon which to draw the BulletManager
+     * @param canvas The canvas upon which to draw the _bulletManager
      */
     public void draw(Canvas canvas)
     {
@@ -68,7 +69,7 @@ public class EnemyManager
     }
 
     /**
-     * Updates the BulletManager.
+     * Updates the _bulletManager.
      *
      * @param dt The time since the last update
      */

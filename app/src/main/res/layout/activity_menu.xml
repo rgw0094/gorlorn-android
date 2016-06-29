@@ -22,17 +22,17 @@
         <Space
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="7" />
+            android:layout_weight="90" />
 
-        <LinearLayout
+        <RelativeLayout
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:layout_height="wrap_content">
 
             <Button
                 android:id="@+id/playButton"
-                style="?metaButtonBarButtonStyle"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
+                android:layout_alignLeft="@+id/statisticsButton"
+                android:layout_alignRight="@+id/statisticsButton"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical|center_horizontal"
                 android:layout_weight="1"
@@ -40,28 +40,41 @@
                 android:text="Play"/>
 
             <Button
-                android:id="@+id/leaderboardButton"
-                style="?metaButtonBarButtonStyle"
-                android:text="Leaderboard"
+                android:id="@+id/statisticsButton"
+                android:text="Statistics"
+                android:layout_below="@+id/playButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:onClick="viewLeaderboard"
+                android:onClick="showStatistics"
+                android:layout_gravity="center_vertical|center_horizontal"/>
+
+            <Button
+                android:id="@+id/aboutButton"
+                android:text="About"
+                android:layout_width="0dp"
+                android:layout_below="@id/statisticsButton"
+                android:layout_alignLeft="@+id/statisticsButton"
+                android:layout_alignRight="@+id/statisticsButton"
+                android:layout_height="wrap_content"
+                android:onClick="showAboutScreen"
                 android:layout_gravity="center_vertical|center_horizontal"/>
 
             <Button
                 android:id="@+id/quitButton"
-                style="?metaButtonBarButtonStyle"
                 android:text="Quit"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
+                android:layout_below="@id/aboutButton"
+                android:layout_alignLeft="@+id/statisticsButton"
+                android:layout_alignRight="@+id/statisticsButton"
                 android:layout_height="wrap_content"
                 android:onClick="quit"
                 android:layout_gravity="center_vertical|center_horizontal"/>
-        </LinearLayout>
+        </RelativeLayout>
 
         <Space
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="3" />
+            android:layout_weight="10" />
     </LinearLayout>
 
     <com.google.android.gms.ads.AdView

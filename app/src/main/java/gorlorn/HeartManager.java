@@ -21,7 +21,7 @@ public class HeartManager
     private Bitmap _heartSprite;
 
     /**
-     * Constructs a new HeartManager.
+     * Constructs a new _heartManager.
      * @param gorlorn
      */
     public HeartManager(Gorlorn gorlorn)
@@ -38,6 +38,7 @@ public class HeartManager
      */
     public void spawnHeart(int x, int y)
     {
+        _gorlorn.getGameStats().heartsSpawned++;
         _hearts.add(new Heart(_gorlorn, _heartSprite, x, y));
     }
 

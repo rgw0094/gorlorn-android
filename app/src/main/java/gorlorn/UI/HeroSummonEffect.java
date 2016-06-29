@@ -129,8 +129,8 @@ public class HeroSummonEffect
 
         canvas.drawBitmap(
                 Bitmaps.Hero,
-                _gorlorn.Hero.X - (float) _gorlorn.Hero.Width / 2.0f,
-                _gorlorn.Hero.Y - (float) _gorlorn.Hero.Height / 2.0f,
+                _gorlorn.getHero().X - (float) _gorlorn.getHero().Width / 2.0f,
+                _gorlorn.getHero().Y - (float) _gorlorn.getHero().Height / 2.0f,
                 _heroPaint);
     }
 }

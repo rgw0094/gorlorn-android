@@ -42,7 +42,7 @@ public class Button
 
     public void update()
     {
-        _isClicked = _gorlorn.Hud.isClicked() && _hitBox.contains(_gorlorn.Hud.getClickX(), _gorlorn.Hud.getClickY());
+        _isClicked = _gorlorn.getHud().isClicked() && _hitBox.contains(_gorlorn.getHud().getClickX(), _gorlorn.getHud().getClickY());
     }
 
     public void draw(Canvas canvas)

@@ -24,7 +24,7 @@ public class Hero extends Entity
 
 
     /**
-     * Constructs a new Hero.
+     * Constructs a new _hero.
      *
      * @param gorlorn
      */
@@ -55,7 +55,7 @@ public class Hero extends Entity
         if (_healthPercent <= 0.0f)
         {
             _healthPercent = 0.0f;
-            _gorlorn.showDeathScreen();
+            _gorlorn.die();
         }
     }
 
@@ -82,7 +82,7 @@ public class Hero extends Entity
         if (_gorlorn.IsDebugMode)
         {
             //Show movement state
-            canvas.drawText(MessageFormat.format("Dir  {0}", _direction), 10, 520, _gorlorn.Hud._scorePaint);
+            canvas.drawText(MessageFormat.format("Dir  {0}", _direction), 10, 520, _gorlorn.getHud()._scorePaint);
         }
     }
 
@@ -92,7 +92,7 @@ public class Hero extends Entity
         boolean canMoveAndShoot = !getIsBlinking() || new Date().getTime() > _timeStartedBlinkingMs + Constants.PlayerFrozenOnHitMs;
 
         //Update movement - the player will have a quick acceleration, but stop instantly
-        if (canMoveAndShoot && _gorlorn.Hud.isLeftPressed())
+        if (canMoveAndShoot && _gorlorn.getHud().isLeftPressed())
         {
             if (_direction == HeroDirection.Right)
             {
@@ -101,7 +101,7 @@ public class Hero extends Entity
             Ax = -_acceleration;
             _direction = HeroDirection.Left;
         }
-        else if (canMoveAndShoot && _gorlorn.Hud.isRightPressed())
+        else if (canMoveAndShoot && _gorlorn.getHud().isRightPressed())
         {
             if (_direction == HeroDirection.Left)
             {
@@ -129,7 +129,8 @@ public class Hero extends Entity
             if (now - _lastShotFiredMs > Constants.MinShotIntervalMs)
             {
                 _lastShotFiredMs = now;
-                _gorlorn.BulletManager.FireBullet(X, Y, Math.PI * 1.5);
+                _gorlorn.getBulletManager().FireBullet(X, Y, Math.PI * 1.5);
+                _gorlorn.getGameStats().shotsFired++;
             }
         }
 

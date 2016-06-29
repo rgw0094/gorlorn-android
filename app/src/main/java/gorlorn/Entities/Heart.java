@@ -40,9 +40,10 @@ public class Heart extends Entity
         super.update(dt);
 
         //Restore health if we hit the hero then destroy this heart
-        if (_gorlorn.Hero.testHit(this))
+        if (_gorlorn.getHero().testHit(this))
         {
-            _gorlorn.Hero.restoreHealth();
+            _gorlorn.getGameStats().heartsCollected++;
+            _gorlorn.getHero().restoreHealth();
             return true;
         }
 

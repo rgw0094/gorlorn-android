@@ -31,9 +31,9 @@ public class Enemy extends Entity
         super.update(dt);
 
         //Check for collision with hero
-        if (_gorlorn.Hero.testHit(this))
+        if (_gorlorn.getHero().testHit(this))
         {
-            _gorlorn.Hero.dealDamage(Constants.EnemyDamage);
+            _gorlorn.getHero().dealDamage(Constants.EnemyDamage);
             return true;
         }
 

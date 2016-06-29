@@ -4,6 +4,7 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 
 import java.util.LinkedList;
+import java.util.Random;
 
 import gorlorn.Entities.Bullet;
 import gorlorn.Entities.Enemy;
@@ -12,19 +13,21 @@ import gorlorn.activities.R;
 
 /**
  * Spawns and controls bullets.
- *
+ * <p/>
  * Created by Rob on 1/14/2016.
  */
 public class BulletManager
 {
     private Gorlorn _gorlorn;
     private Bitmap _projectileSprite;
+    private java.util.Random _random = new Random();
     private LinkedList<Bullet> _bullets = new LinkedList<>();
     private float _speed;
     private int _chainCountToSpawnHeart = Constants.StartingChainCountToSpawnHeart;
 
     /**
-     * Constructs a new BulletManager.
+     * Constructs a new _bulletManager.
+     *
      * @param gorlorn
      */
     public BulletManager(Gorlorn gorlorn)
@@ -52,23 +55,27 @@ public class BulletManager
             }
 
             //Check if the bullet hit an enemy
-            Enemy killedEnemy = _gorlorn.EnemyManager.TryKillEnemy(bullet);
+            Enemy killedEnemy = _gorlorn.getEnemyManager().TryKillEnemy(bullet);
             if (killedEnemy != null)
             {
-                _gorlorn.Hud.addPoints(bullet.X, bullet.Y, bullet.getChainCount());
+                _gorlorn.getHud().addPoints(bullet.X, bullet.Y, bullet.getChainCount());
                 deadBullets.add(bullet);
 
                 if (bullet.getChainCount() > _chainCountToSpawnHeart)
                 {
-                    _gorlorn.HeartManager.spawnHeart((int) bullet.X, (int) bullet.Y);
+                    _gorlorn.getHeartManager().spawnHeart((int) bullet.X, (int) bullet.Y);
                     _chainCountToSpawnHeart++;
                 }
 
                 //Fire 3 short-lived bullets in random angles when an enemy is killed
                 for (int i = 0; i < 3; i++)
                 {
-                    double angle = _gorlorn.Random.nextDouble() * Math.PI * 2.0;
-                    newBullets.add(new Bullet(_gorlorn, _projectileSprite, killedEnemy.X, killedEnemy.Y, _speed, angle, bullet.getChainCount() + 1, Constants.ChainBulletLifeTimeMs));
+                    double angle = _random.nextDouble() * Math.PI * 2.0;
+
+                    int chainCount = bullet.getChainCount() + 1;
+                    _gorlorn.getGameStats().highestCombo = Math.max(chainCount, _gorlorn.getGameStats().highestCombo);
+
+                    newBullets.add(new Bullet(_gorlorn, _projectileSprite, killedEnemy.X, killedEnemy.Y, _speed, angle, chainCount, Constants.ChainBulletLifeTimeMs));
                 }
             }
         }

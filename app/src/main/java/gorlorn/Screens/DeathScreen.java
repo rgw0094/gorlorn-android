@@ -1,4 +1,4 @@
-package gorlorn.UI;
+package gorlorn.Screens;
 
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -9,6 +9,7 @@ import android.graphics.Paint;
 import java.util.Date;
 
 import gorlorn.Gorlorn;
+import gorlorn.UI.Button;
 import gorlorn.activities.R;
 
 /**
@@ -16,7 +17,7 @@ import gorlorn.activities.R;
  * <p/>
  * Created by Rob on 6/14/2016.
  */
-public class DeathScreen
+public class DeathScreen extends ScreenBase
 {
     private enum Phase
     {
@@ -29,17 +30,23 @@ public class DeathScreen
     private int _textFadeDurationMs = 200;
     private int _redFlashDuration = 100;
 
-    private Gorlorn _gorlorn;
     private long _timeEnteredPhaseMs;
     private float _backgroundOpacity = 0.0f;
     private Phase _currentPhase;
     private Paint _textPaint;
     private Paint _heroPaint = new Paint();
     private Button _tryAgainButton;
+    private boolean _newHighScore;
 
-    public DeathScreen(Gorlorn gorlorn)
+    /**
+     * Constructs a new DeathScreen.
+     * @param gorlorn
+     * @param newHighScore    Whether or not the user achieved a new high score this game
+     */
+    public DeathScreen(Gorlorn gorlorn, boolean newHighScore)
     {
-        _gorlorn = gorlorn;
+        super(gorlorn);
+        _newHighScore = newHighScore; //TODO: fancy effect!
 
         _heroPaint.setARGB(255, 255, 255, 255);
 
@@ -53,12 +60,20 @@ public class DeathScreen
         _tryAgainButton = new Button(gorlorn, R.drawable.tryagain, 0.35f, 0.35f / 4.25f, gorlorn.getXFromPercent(0.78f), gorlorn.getYFromPercent(0.9f));
     }
 
-    public void show()
+    @Override
+    public void show(ScreenBase previousScreen)
     {
         enterPhase(Phase.BackgroundFadeIn);
     }
 
-    public void update(float dt)
+    @Override
+    public boolean leave()
+    {
+        return true;
+    }
+
+    @Override
+    public boolean update(float dt)
     {
         if (_currentPhase == Phase.BackgroundFadeIn)
         {
@@ -91,10 +106,17 @@ public class DeathScreen
                 _gorlorn.startGame();
             }
         }
+        return false;
     }
 
+    @Override
     public void draw(Canvas canvas)
     {
+        _gorlorn.getBackground().draw(canvas);
+        _gorlorn.getBulletManager().Draw(canvas);
+        _gorlorn.getEnemyManager().draw(canvas);
+        _gorlorn.getHero().draw(canvas);
+
         canvas.drawARGB((int) (255.0f * _backgroundOpacity), 0, 0, 0);
 
         if (_currentPhase == Phase.RedFlash)
@@ -106,9 +128,9 @@ public class DeathScreen
         ColorFilter filter = new LightingColorFilter(Color.RED, (int) (100.0f * _backgroundOpacity));
         _heroPaint.setColorFilter(filter);
 
-        float x = _gorlorn.Hero.X - (float) _gorlorn.Hero.Width / 2.0f;
-        float y = _gorlorn.Hero.Y - (float) _gorlorn.Hero.Height / 2.0f;
-        canvas.drawBitmap(_gorlorn.Hero.Sprite, x, y, _heroPaint);
+        float x = _gorlorn.getHero().X - (float) _gorlorn.getHero().Width / 2.0f;
+        float y = _gorlorn.getHero().Y - (float) _gorlorn.getHero().Height / 2.0f;
+        canvas.drawBitmap(_gorlorn.getHero().Sprite, x, y, _heroPaint);
 
         if (_currentPhase == Phase.TextFadeIn)
         {

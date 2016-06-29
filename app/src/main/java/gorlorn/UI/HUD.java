@@ -219,7 +219,7 @@ public class HUD
     public void addPoints(float x, float y, int chainCount)
     {
         long points = (long) Math.pow(2, chainCount);
-        _gorlorn.Score += points;
+        _gorlorn.getGameStats().score += points;
 
         _points.add(new Points(_gorlorn, points, x, y));
     }
@@ -248,8 +248,8 @@ public class HUD
      */
     public void draw(Canvas canvas)
     {
-        canvas.drawText(MessageFormat.format("High Score: {0}", _gorlorn.HighScore), _gorlorn.getXFromPercent(0.01f), _gorlorn.getYFromPercent(0.065f), _highScorePaint);
-        canvas.drawText(MessageFormat.format("Score: {0}", _gorlorn.Score), _gorlorn.getXFromPercent(0.01f), _gorlorn.getYFromPercent(0.14f), _scorePaint);
+        canvas.drawText(MessageFormat.format("High Score: {0}", _gorlorn.getHighScore()), _gorlorn.getXFromPercent(0.01f), _gorlorn.getYFromPercent(0.065f), _highScorePaint);
+        canvas.drawText(MessageFormat.format("Score: {0}", _gorlorn.getGameStats().score), _gorlorn.getXFromPercent(0.01f), _gorlorn.getYFromPercent(0.14f), _scorePaint);
 
         drawButton(canvas, _leftButtonSprite, _leftButtonHitBox);
         drawButton(canvas, _rightButtonSprite, _rightButtonHitBox);
@@ -266,7 +266,7 @@ public class HUD
             points.Draw(canvas);
         }
 
-        _healthBar.draw(canvas, _gorlorn.Hero.getHealthPercent());
+        _healthBar.draw(canvas, _gorlorn.getHero().getHealthPercent());
     }
 
     /**

@@ -6,6 +6,7 @@ package gorlorn.UI;
 public enum GorlornScreen
 {
     Menu,
+    Statistics,
     Game,
     Death
 }

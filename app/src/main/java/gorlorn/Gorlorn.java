@@ -4,15 +4,21 @@ import android.graphics.Canvas;
 import android.view.MotionEvent;
 import android.view.View;
 
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
+
+import java.util.Date;
 import java.util.Random;
 
 import gorlorn.Entities.Hero;
 import gorlorn.Framework.RenderLoopBase;
+import gorlorn.Screens.GameScreen;
+import gorlorn.Screens.MenuScreen;
 import gorlorn.UI.Background;
-import gorlorn.UI.DeathScreen;
-import gorlorn.UI.GorlornScreen;
+import gorlorn.Screens.DeathScreen;
 import gorlorn.UI.HUD;
-import gorlorn.UI.HeroSummonEffect;
+import gorlorn.Screens.ScreenBase;
+import gorlorn.Screens.StatisticsScreen;
 import gorlorn.activities.GorlornActivity;
 import gorlorn.activities.R;
 
@@ -23,14 +29,23 @@ import gorlorn.activities.R;
  */
 public class Gorlorn extends RenderLoopBase
 {
+    public boolean IsDebugMode = false;
+
     //region Private Variables
 
     private GorlornActivity _activity;
-    private GorlornScreen _screen;
     private Background _background;
-    private DeathScreen _deathScreen;
-    private HeroSummonEffect _heroSummonEffect;
+    private ScreenBase _activeScreen;
+    private ScreenBase _pendingScreen;
+    private gorlorn.Entities.Hero _hero;
+    private HUD _hud;
+    private EnemyManager _enemyManager;
+    private BulletManager _bulletManager;
+    private HeartManager _heartManager;
     private boolean _isInitialized;
+    private GorlornStats _currentStats;
+    private GorlornStats _cumulativeStats;
+    private long _timeStartedMs;
 
     //endregion
 
@@ -41,35 +56,79 @@ public class Gorlorn extends RenderLoopBase
         super(activity);
 
         _activity = activity;
-        _screen = GorlornScreen.Menu;
+        setScreen(new MenuScreen(this));
+        _currentStats = new GorlornStats();
+        _cumulativeStats = GorlornStats.load(activity);
     }
 
     //endregion
 
     //region Getter/Setters
 
-    public java.util.Random Random = new Random();
-    public gorlorn.Entities.Hero Hero;
-    public HUD Hud;
-    public EnemyManager EnemyManager;
-    public BulletManager BulletManager;
-    public HeartManager HeartManager;
-    public boolean IsDebugMode = false;
-    public long Score = 0;
-    public long HighScore = 0;
+    public Background getBackground()
+    {
+        return _background;
+    }
+
+    public Hero getHero()
+    {
+        return _hero;
+    }
+
+    public HUD getHud()
+    {
+        return _hud;
+    }
+
+    public EnemyManager getEnemyManager()
+    {
+        return _enemyManager;
+    }
+
+    public BulletManager getBulletManager()
+    {
+        return _bulletManager;
+    }
+
+    public HeartManager getHeartManager()
+    {
+        return _heartManager;
+    }
+
+    /**
+     * Returns the player's statistics for the current game.
+     *
+     * @return
+     */
+    public GorlornStats getGameStats()
+    {
+        return _currentStats;
+    }
+
+    /**
+     * Returns the player's all-time highest score.
+     *
+     * @return
+     */
+    public long getHighScore()
+    {
+        return _cumulativeStats.highScore;
+    }
 
     //endregion
 
     //region Public Methods
 
     /**
-     * Returns which screen is currently active.
-     *
-     * @return
+     * Called when the user presses back.
      */
-    public GorlornScreen getCurrentScreen()
+    public void onBackPressed()
     {
-        return _screen;
+        //TODO:
+        if (_activeScreen.getClass() == GameScreen.class)
+        {
+            showMenu();
+        }
     }
 
     /**
@@ -77,29 +136,29 @@ public class Gorlorn extends RenderLoopBase
      */
     public void startGame()
     {
-        _deathScreen = null;
-        Score = 0;
+        _timeStartedMs = new Date().getTime();
+        _currentStats = new GorlornStats();
 
-        Hero = new Hero(this);
-        EnemyManager = new EnemyManager(this);
-        BulletManager = new BulletManager(this);
-        HeartManager = new HeartManager(this);
+        _hero = new Hero(this);
+        _enemyManager = new EnemyManager(this);
+        _bulletManager = new BulletManager(this);
+        _heartManager = new HeartManager(this);
 
-        if (_screen == GorlornScreen.Menu)
-        {
-            toggleMenuControlVisibility(false);
-        }
-
-        //Show a transition effect based upon which screen we are coming from
-        _heroSummonEffect = new HeroSummonEffect(this, _screen == GorlornScreen.Menu);
-        _screen = GorlornScreen.Game;
+        setScreen(new GameScreen(this));
     }
 
-    public void showDeathScreen()
+    /**
+     * Ends the current game and transitions to the death screen.
+     */
+    public void die()
     {
-        _deathScreen = new DeathScreen(this);
-        _deathScreen.show();
-        _screen = GorlornScreen.Death;
+        //Update statistics
+        boolean newHighScore = _currentStats.score > _cumulativeStats.highScore;
+        _currentStats.timePlayedMs = new Date().getTime() - _timeStartedMs;
+        _cumulativeStats.add(_currentStats);
+        _cumulativeStats.save(_activity);
+
+        setScreen(new DeathScreen(this, newHighScore));
     }
 
     /**
@@ -107,9 +166,15 @@ public class Gorlorn extends RenderLoopBase
      */
     public void showMenu()
     {
-        toggleMenuControlVisibility(true);
-        _deathScreen = null;
-        _screen = GorlornScreen.Menu;
+        setScreen(new MenuScreen(this));
+    }
+
+    /**
+     * Aborts whatever the user is doing and shows the statistics.
+     */
+    public void showStatistics()
+    {
+        setScreen(new StatisticsScreen(this, _cumulativeStats));
     }
 
     /**
@@ -134,41 +199,18 @@ public class Gorlorn extends RenderLoopBase
         {
             Bitmaps.Load(this);
             _background = new Background(this);
-            Hud = new HUD(this);
+            _hud = new HUD(this);
             _isInitialized = true;
             return;
         }
 
-        switch (_screen)
+        _background.update(dt);
+
+        if (_activeScreen == null || _activeScreen.update(dt))
         {
-            case Menu:
-                _background.update(dt);
-                break;
-
-            case Game:
-                _background.update(dt);
-                if (_heroSummonEffect != null)
-                {
-                    if (_heroSummonEffect.update(dt))
-                    {
-                        //The hero summoning effect is complete!
-                        _heroSummonEffect = null;
-                        return;
-                    }
-                }
-                else
-                {
-                    EnemyManager.update(dt);
-                    BulletManager.update(dt);
-                    Hero.update(dt);
-                    Hud.update(dt);
-                    HeartManager.update(dt);
-                }
-                break;
-
-            case Death:
-                _deathScreen.update(dt);
-                break;
+            _pendingScreen.show(_activeScreen);
+            _activeScreen = _pendingScreen;
+            _pendingScreen = null;
         }
     }
 
@@ -181,40 +223,18 @@ public class Gorlorn extends RenderLoopBase
             return;
         }
 
-        if (_screen == GorlornScreen.Menu)
+        if (_activeScreen != null)
         {
-            _background.draw(canvas);
-            canvas.drawBitmap(Bitmaps.Title, getXFromPercent(0.15f), getYFromPercent(0.15f), null);
-            return;
-        }
-
-        _background.draw(canvas);
-        BulletManager.Draw(canvas);
-        EnemyManager.draw(canvas);
-
-        if (_heroSummonEffect != null)
-        {
-            _heroSummonEffect.draw(canvas);
-        }
-        else
-        {
-            Hud.draw(canvas);
-            Hero.draw(canvas);
-        }
-        HeartManager.draw(canvas);
-
-        if (_screen == GorlornScreen.Death)
-        {
-            _deathScreen.draw(canvas);
+            _activeScreen.draw(canvas);
         }
     }
 
     @Override
     public void handleInputEvent(MotionEvent me)
     {
-        if (Hud != null)
+        if (_hud != null)
         {
-            Hud.handleTouchEvent(me);
+            _hud.handleTouchEvent(me);
         }
     }
 
@@ -222,12 +242,47 @@ public class Gorlorn extends RenderLoopBase
 
     //region Private Methods
 
-    private void toggleMenuControlVisibility(boolean show)
+    /**
+     * Transitions to the given screen.
+     *
+     * @param screen The screen to which to transition
+     */
+    private void setScreen(ScreenBase screen)
+    {
+        //If there is already a screen change pending, abort!
+        if (_pendingScreen != null)
+            return;
+
+        //If there is no current screen or the current screen says it can leave immediately, switch to the new screen now.
+        if (_activeScreen == null || _activeScreen.leave())
+        {
+            screen.show(_activeScreen);
+            _activeScreen = screen;
+        }
+        else
+        {
+            //Otherwise the pending screen will become the active screen when the current _activeScreen.update() returns true
+            _pendingScreen = screen;
+        }
+    }
+
+    public void toggleMenuControlVisibility(boolean show)
     {
         int visibility = show ? View.VISIBLE : View.GONE;
 
         _activity.findViewById(R.id.buttonsView).setVisibility(visibility);
         _activity.findViewById(R.id.adView).setVisibility(visibility);
+    }
+
+    private void DisplayAd()
+    {
+        AdView mAdView = (AdView) _activity.findViewById(R.id.adView);
+        //AdRequest adRequest = new AdRequest.Builder().build();
+        AdRequest adRequest = new AdRequest.Builder()
+                .addTestDevice(AdRequest.DEVICE_ID_EMULATOR)        // All emulators
+                .addTestDevice("B002DA6CED0109ADA1321B29C4DEE7B1")
+                .build();
+        mAdView.loadAd(adRequest);
     }
 
     //endregion

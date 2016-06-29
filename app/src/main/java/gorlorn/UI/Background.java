@@ -47,6 +47,24 @@ public class Background
     }
 
     /**
+     * Retracts the grid portion of the background.
+     * @param durationMs The duration of the retract animation in milliseconds
+     */
+    public void retractGrid(int durationMs)
+    {
+
+    }
+
+    /**
+     * Extends the grid portion of the background.
+     * * @param durationMs The duration of the retract animation in milliseconds
+     */
+    public void extendGrid(int durationMs)
+    {
+
+    }
+
+    /**
      * Updates the background
      *
      * @param dt The time since the last update
