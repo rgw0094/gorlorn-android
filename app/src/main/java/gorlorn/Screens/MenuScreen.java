@@ -18,13 +18,13 @@ public class MenuScreen extends ScreenBase
     @Override
     public void show(ScreenBase previousScreen)
     {
-        _gorlorn.toggleMenuControlVisibility(true);
+        _gorlorn.showMenuButtons();
     }
 
     @Override
     public boolean leave()
     {
-        _gorlorn.toggleMenuControlVisibility(false);
+        _gorlorn.hideMenuButtons();
         return true;
     }
 

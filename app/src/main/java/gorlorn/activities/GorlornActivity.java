@@ -49,7 +49,7 @@ public class GorlornActivity extends Activity
     @Override
     public void onBackPressed()
     {
-        _gorlorn.onBackPressed();
+        _gorlorn.showMenu();
     }
 
     public void startGame(View view)

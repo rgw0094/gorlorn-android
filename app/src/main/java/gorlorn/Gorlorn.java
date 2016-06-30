@@ -1,6 +1,8 @@
 package gorlorn;
 
 import android.graphics.Canvas;
+import android.os.Handler;
+import android.os.Looper;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -29,7 +31,7 @@ import gorlorn.activities.R;
  */
 public class Gorlorn extends RenderLoopBase
 {
-    public boolean IsDebugMode = false;
+    public static boolean IsDebugMode = false;
 
     //region Private Variables
 
@@ -120,18 +122,6 @@ public class Gorlorn extends RenderLoopBase
     //region Public Methods
 
     /**
-     * Called when the user presses back.
-     */
-    public void onBackPressed()
-    {
-        //TODO:
-        if (_activeScreen.getClass() == GameScreen.class)
-        {
-            showMenu();
-        }
-    }
-
-    /**
      * Starts a game.
      */
     public void startGame()
@@ -166,6 +156,9 @@ public class Gorlorn extends RenderLoopBase
      */
     public void showMenu()
     {
+        if (_activeScreen.getClass() == MenuScreen.class)
+            return;
+
         setScreen(new MenuScreen(this));
     }
 
@@ -266,23 +259,73 @@ public class Gorlorn extends RenderLoopBase
         }
     }
 
-    public void toggleMenuControlVisibility(boolean show)
+    /**
+     * Shows the menu controls in the activity layout.
+     */
+    public void showMenuButtons()
     {
-        int visibility = show ? View.VISIBLE : View.GONE;
-
-        _activity.findViewById(R.id.buttonsView).setVisibility(visibility);
-        _activity.findViewById(R.id.adView).setVisibility(visibility);
+        new Handler(Looper.getMainLooper()).post(new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                _activity.findViewById(R.id.buttonsView).setVisibility(View.VISIBLE);
+                //_activity.findViewById(R.id.adView).setVisibility(View.VISIBLE);
+            }
+        });
     }
 
-    private void DisplayAd()
+    /**
+     * Hides the menu controls in the activity layout.
+     */
+    public void hideMenuButtons()
     {
-        AdView mAdView = (AdView) _activity.findViewById(R.id.adView);
-        //AdRequest adRequest = new AdRequest.Builder().build();
-        AdRequest adRequest = new AdRequest.Builder()
-                .addTestDevice(AdRequest.DEVICE_ID_EMULATOR)        // All emulators
-                .addTestDevice("B002DA6CED0109ADA1321B29C4DEE7B1")
-                .build();
-        mAdView.loadAd(adRequest);
+        new Handler(Looper.getMainLooper()).post(new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                _activity.findViewById(R.id.buttonsView).setVisibility(View.GONE);
+                //_activity.findViewById(R.id.adView).setVisibility(View.GONE);
+            }
+        });
+    }
+
+    /**
+     * Displays an ad at the bottom of the screen.
+     */
+    public void showAd()
+    {
+        new Handler(Looper.getMainLooper()).post(new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                AdView mAdView = (AdView) _activity.findViewById(R.id.adView);
+                mAdView.setVisibility(View.VISIBLE);
+
+                //AdRequest adRequest = new AdRequest.Builder().build();
+                AdRequest adRequest = new AdRequest.Builder()
+                        .addTestDevice(AdRequest.DEVICE_ID_EMULATOR)        // All emulators
+                        .addTestDevice("B002DA6CED0109ADA1321B29C4DEE7B1")
+                        .build();
+                mAdView.loadAd(adRequest);
+                int f = 0;
+            }
+        });
+    }
+
+    public void hideAd()
+    {
+        new Handler(Looper.getMainLooper()).post(new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                AdView mAdView = (AdView) _activity.findViewById(R.id.adView);
+                mAdView.setVisibility(View.GONE);
+            }
+        });
     }
 
     //endregion

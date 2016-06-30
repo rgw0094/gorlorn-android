@@ -1,6 +1,7 @@
 package gorlorn.Entities;
 
 import android.graphics.Bitmap;
+import android.graphics.Point;
 
 import gorlorn.Constants;
 import gorlorn.Gorlorn;
@@ -15,14 +16,32 @@ public class Enemy extends Entity
 
     /**
      * Constructs a new enemy.
+     *
      * @param gorlorn
-     * @param sprite     The sprite to represent the enemy
+     * @param sprite  The sprite to represent the enemy
      */
     public Enemy(Gorlorn gorlorn, Bitmap sprite)
     {
         super(sprite);
 
         _gorlorn = gorlorn;
+    }
+
+    /**
+     * Override the rectangle-based hit detection since the enemies are spheres.
+     *
+     * @param point
+     * @return
+     */
+    @Override
+    public boolean testHit(Point point)
+    {
+        double centerX = X - (double) Width * 0.5f;
+        double centerY = Y - (double) Height * 0.5f;
+
+        double dist = Math.sqrt(Math.pow((double) point.x - centerX, 2) + Math.pow((double) point.y - centerY, 2));
+
+        return Math.abs(dist) < Width;
     }
 
     @Override

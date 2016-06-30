@@ -10,6 +10,10 @@ public abstract class ScreenBase
 {
     protected Gorlorn _gorlorn;
 
+    /**
+     * Constructs a new ScreenBase
+     * @param gorlorn    The gorlorn game displaying this screen.
+     */
     public ScreenBase(Gorlorn gorlorn)
     {
         _gorlorn = gorlorn;

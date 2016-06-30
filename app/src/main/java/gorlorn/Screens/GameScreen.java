@@ -36,7 +36,6 @@ public class GameScreen extends ScreenBase
     @Override
     public boolean update(float dt)
     {
-        _gorlorn.getBackground().update(dt);
         if (_heroSummonEffect != null)
         {
             if (_heroSummonEffect.update(dt))

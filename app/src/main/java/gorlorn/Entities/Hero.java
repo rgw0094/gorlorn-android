@@ -1,6 +1,7 @@
 package gorlorn.Entities;
 
 import android.graphics.Canvas;
+import android.graphics.Point;
 
 import java.text.MessageFormat;
 import java.util.Date;
@@ -47,12 +48,12 @@ public class Hero extends Entity
         if (getIsBlinking())
             return;
 
-        _healthPercent = Math.max(0.0f, _healthPercent - damagePercent);
+        _healthPercent -= damagePercent;
 
         //Start blinking!
         startBlinking(Constants.PlayerBlinksOnHitMs);
 
-        if (_healthPercent <= 0.0f)
+        if (_healthPercent <= 0.001f)
         {
             _healthPercent = 0.0f;
             _gorlorn.die();

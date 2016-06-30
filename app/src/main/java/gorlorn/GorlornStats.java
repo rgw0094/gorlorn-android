@@ -50,7 +50,7 @@ public class GorlornStats
     public void add(GorlornStats stats)
     {
         score += stats.score;
-        highScore = Math.max(highScore, stats.highScore);
+        highScore = Math.max(highScore, stats.score);
         highestCombo = Math.max(highestCombo, stats.highestCombo);
         shotsFired += stats.shotsFired;
         enemiesVanquished += stats.enemiesVanquished;

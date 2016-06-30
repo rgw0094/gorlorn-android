@@ -39,7 +39,7 @@ public class Constants
 
     public static long StartingEnemySpawnIntervalMs = 500;
     public static float EnemySpawnRateAcceleration = 0.996f;
-    public static float EnemyDamage = 1.2f;
+    public static float EnemyDamage = 0.2f;
     public static float HeartHealthRestore = 0.2f;
     public static long MinShotIntervalMs = 200;
     public static int StartingChainCountToSpawnHeart = 4;

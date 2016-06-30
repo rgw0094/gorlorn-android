@@ -8,6 +8,8 @@ import android.graphics.Rect;
 
 import java.util.Date;
 
+import gorlorn.Gorlorn;
+
 /**
  * Created by Rob on 1/14/2016.
  */
@@ -21,6 +23,7 @@ public class Entity
     private float _blinkOpacityDelta;
 
     public Bitmap Sprite;
+    private Paint _hitBoxPaint;
     public float X;
     public float Y;
     public int Width;
@@ -55,7 +58,11 @@ public class Entity
         Vx = Math.max(-MaxV, Math.min(MaxV, Vx + Ax * dt));
         Vy = Math.max(-MaxV, Math.min(MaxV, Vy + Ay * dt));
 
-        _hitBox = new Rect((int) X, (int) Y, (int) X + Width, (int) Y + Height);
+        _hitBox = new Rect(
+                (int) (X - (float) Width * 0.48f),
+                (int) (Y - (float) Height * 0.48f),
+                (int) (X + (float) Width * 0.48f),
+                (int) (Y + (float) Height * 0.48f));
 
         if (_isBlinking)
         {
@@ -98,10 +105,22 @@ public class Entity
         }
 
         canvas.drawBitmap(Sprite, X - (float) Width / 2.0f, Y - (float) Height / 2.0f, paint);
+
+        if (Gorlorn.IsDebugMode)
+        {
+            if (_hitBoxPaint == null)
+            {
+                _hitBoxPaint = new Paint();
+                _hitBoxPaint.setARGB(255, 0, 255, 0);
+                _hitBoxPaint.setStyle(Paint.Style.STROKE);
+            }
+            canvas.drawRect(_hitBox, _hitBoxPaint);
+        }
     }
 
     /**
      * Gets the time this Entity was created in milliseconds from the origin.
+     *
      * @return
      */
     public long getTimeCreatedMs()
@@ -111,6 +130,7 @@ public class Entity
 
     /**
      * Returns whether or not this entity is older than the given entity.
+     *
      * @param entity
      * @return
      */

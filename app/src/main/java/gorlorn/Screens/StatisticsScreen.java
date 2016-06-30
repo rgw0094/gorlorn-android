@@ -2,36 +2,33 @@ package gorlorn.Screens;
 
 import android.graphics.Canvas;
 import android.graphics.Paint;
+import android.graphics.Rect;
 
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import gorlorn.Framework.RenderLoopBase;
 import gorlorn.Gorlorn;
 import gorlorn.GorlornStats;
-import gorlorn.UI.Background;
 
 /**
  * Created by Rob on 6/27/2016.
  */
 public class StatisticsScreen extends ScreenBase
 {
+    private static int BackgroundRetractMs = 300;
+
     private GorlornStats _stats;
     private Phase _phase;
     private Paint _statsPaint;
-    private float _rowHeight;
-    private long _timeShownMs;
-    private float _topY;
-    private float _targetTopY;
+    private long _timeEnteredPhaseMs;
+    private float _statsSizePercent = 0.0f;
 
     private enum Phase
     {
-        RetractingBackground,
-        DescendingStats,
+        Entering,
         ShowingStats,
-        AscendingStats,
-        ExtendingBackground
+        Leaving,
     }
 
     /**
@@ -50,29 +47,22 @@ public class StatisticsScreen extends ScreenBase
         _statsPaint.setARGB(255, 255, 255, 255);
         _statsPaint.setStyle(Paint.Style.FILL);
         _statsPaint.setAntiAlias(true);
-        _statsPaint.setTextSize(gorlorn.getYFromPercent(0.05f));
-
-        _targetTopY = gorlorn.getYFromPercent(0.4f);
-        _rowHeight = gorlorn.getYFromPercent(0.6f) / 3.0f;
-    }
-
-    public void show()
-    {
-        _phase = Phase.RetractingBackground;
-        _timeShownMs = new Date().getTime();
-        _gorlorn.getBackground().retractGrid(500);
     }
 
     @Override
     public void show(ScreenBase previousScreen)
     {
-
+        enterPhase(Phase.Entering);
+        _gorlorn.getBackground().retractGrid(BackgroundRetractMs);
     }
 
     @Override
     public boolean leave()
     {
         //Don't leave immediately - we have a transition effect!
+        _gorlorn.hideAd();
+        _gorlorn.getBackground().extendGrid(BackgroundRetractMs);
+        enterPhase(Phase.Leaving);
         return false;
     }
 
@@ -80,17 +70,22 @@ public class StatisticsScreen extends ScreenBase
     {
         switch (_phase)
         {
-            case RetractingBackground:
-                if (new Date().getTime() - _timeShownMs > 500)
-                    _phase = Phase.DescendingStats;
+            case Entering:
+                _statsSizePercent = Math.min(1.0f, _statsSizePercent + (1000.0f / (float) BackgroundRetractMs) * dt * 1.05f);
+                if (timeInPhase() > BackgroundRetractMs)
+                {
+                    _statsSizePercent = 1.0f;
+                    _gorlorn.showAd();
+                    enterPhase(Phase.ShowingStats);
+                }
                 break;
 
-            case DescendingStats:
-                _topY += _gorlorn.getYFromPercent(1.0f) * dt;
-                if (_topY >= _targetTopY)
+            case Leaving:
+                _statsSizePercent -= (1000.0f / (float) BackgroundRetractMs) * dt;
+                if (timeInPhase() > BackgroundRetractMs)
                 {
-                    _topY = _targetTopY;
-                    _phase = Phase.ShowingStats;
+                    _statsSizePercent = 0.0f;
+                    return true;
                 }
                 break;
         }
@@ -100,54 +95,108 @@ public class StatisticsScreen extends ScreenBase
 
     public void draw(Canvas canvas)
     {
-        if (_phase == Phase.AscendingStats || _phase == Phase.DescendingStats || _phase == Phase.ShowingStats)
-        {
-            canvas.drawText("Hello world: ", _gorlorn.getXFromPercent(0.2f), _topY, _statsPaint);
-        }
+        _gorlorn.getBackground().draw(canvas);
+
+        float height = _gorlorn.getYFromPercent(0.6f) * _statsSizePercent;
+        float width = height * 2.4f;
+        int x = (int) ((_gorlorn.ScreenWidth - width) * 0.5f);
+        int y = (int) ((_gorlorn.ScreenHeight - height) * 0.5f) + _gorlorn.getYFromPercent(0.05f);
+
+        Rect statsBounds = new Rect(x, y, x + (int) width, y + (int) height);
+        drawStatsInGrid(canvas, statsBounds);
     }
 
-    public String getHighScore()
+    //region Private Methods
+
+    private void drawStatsInGrid(Canvas canvas, Rect bounds)
+    {
+        float[] columnWidthPercents = new float[]{.32f, .26f, .33f, .15f};
+        int numRows = 5;
+        float rowHeight = (float) bounds.height() / (float) numRows;
+
+        String[] strings = new String[]
+                {
+                        "High Score: ", getHighScore(), "Shots Fired: ", getShotsFired(),
+                        "Score: ", getScore(), "Enemies Killed: ", getEnemiesKilled(),
+                        "Highest Combo: ", getHighestCombo(), "Hearts Spawned: ", getHeartsSpawned(),
+                        "Time Played: ", getTimePlayed(), "Hearts Collected: ", getHeartsCollected(),
+                        "Games Played: ", getGamesPlayed(),
+                };
+
+        _statsPaint.setTextSize(_gorlorn.getYFromPercent(0.06f * _statsSizePercent));
+
+        float y = bounds.top;
+        for (int row = 0; row < numRows; row++)
+        {
+            float x = bounds.left;
+            for (int col = 0; col < columnWidthPercents.length; col++)
+            {
+                int index = row * columnWidthPercents.length + col;
+                if (index == 18) break;
+                canvas.drawText(strings[index], x, y, _statsPaint);
+                x += (bounds.width() * columnWidthPercents[col]);
+            }
+            y += rowHeight;
+        }
+
+        //canvas.drawRect(bounds, _statsPaint);
+    }
+
+    private long timeInPhase()
+    {
+        return new Date().getTime() - _timeEnteredPhaseMs;
+    }
+
+    private void enterPhase(Phase phase)
+    {
+        _phase = phase;
+        _timeEnteredPhaseMs = new Date().getTime();
+    }
+
+    private String getHighScore()
     {
         return NumberFormat.getNumberInstance().format(_stats.highScore);
     }
 
-    public String getScore()
+    private String getScore()
     {
         return NumberFormat.getNumberInstance().format(_stats.score);
     }
 
-    public String getGamesPlayed()
+    private String getGamesPlayed()
     {
         return NumberFormat.getNumberInstance().format(_stats.gamesPlayed);
     }
 
-    public String getShotsFired()
+    private String getShotsFired()
     {
         return NumberFormat.getNumberInstance().format(_stats.shotsFired);
     }
 
-    public String getEnemiesKilled()
+    private String getEnemiesKilled()
     {
         return NumberFormat.getNumberInstance().format(_stats.enemiesVanquished);
     }
 
-    public String getHighestCombo()
+    private String getHighestCombo()
     {
         return NumberFormat.getNumberInstance().format(_stats.highestCombo);
     }
 
-    public String getTimePlayed()
+    private String getTimePlayed()
     {
         return new SimpleDateFormat("HH:mm:ss").format(new Date(_stats.timePlayedMs));
     }
 
-    public String getHeartsSpawned()
+    private String getHeartsSpawned()
     {
         return NumberFormat.getNumberInstance().format(_stats.heartsSpawned);
     }
 
-    public String getHeartsCollected()
+    private String getHeartsCollected()
     {
         return NumberFormat.getNumberInstance().format(_stats.heartsCollected);
     }
+
+    //endregion
 }
