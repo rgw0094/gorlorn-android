@@ -15,6 +15,8 @@ public class Bitmaps
     public static Bitmap Hero;
     public static Bitmap Background;
     public static Bitmap Title;
+    public static Bitmap Bullet;
+    public static Bitmap BulletCombo;
 
     public static void Load(RenderLoopBase renderLoop)
     {
@@ -24,6 +26,8 @@ public class Bitmaps
         Hero = renderLoop.createBitmapByWidthPercent(R.drawable.hero, Constants.HeroDiameter);
         Background = renderLoop.createBitmap(R.drawable.space, renderLoop.getXFromPercent(1.1f), renderLoop.getYFromPercent(1.1f));
         Title = renderLoop.createBitmap(R.drawable.title, renderLoop.getXFromPercent(0.7f), renderLoop.getYFromPercent(0.7f / 4.347826086956522f));
+        Bullet = renderLoop.createBitmapByWidthPercent(R.drawable.bullet, Constants.BulletDiameter);
+        BulletCombo = renderLoop.createBitmapByWidthPercent(R.drawable.bullet_combo, Constants.BulletDiameter);
 
         _isLoaded = true;
     }

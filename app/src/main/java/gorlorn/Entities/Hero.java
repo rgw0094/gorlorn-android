@@ -1,7 +1,6 @@
 package gorlorn.Entities;
 
 import android.graphics.Canvas;
-import android.graphics.Point;
 
 import java.text.MessageFormat;
 import java.util.Date;
@@ -20,7 +19,7 @@ public class Hero extends Entity
     private float _speed;
     private float _acceleration;
     private long _lastShotFiredMs;
-    private float _healthPercent = 1.0f;
+    private float _health;
     private HeroDirection _direction = HeroDirection.None;
 
 
@@ -36,6 +35,7 @@ public class Hero extends Entity
         _gorlorn = gorlorn;
         _speed = (float) _gorlorn.ScreenWidth * Constants.HeroSpeed;
         _acceleration = (float) gorlorn.ScreenWidth * Constants.HeroAcceleration;
+        _health = Constants.PlayerHealth;
 
         MaxV = _speed;
         X = gorlorn.ScreenWidth * .5f;
@@ -48,14 +48,14 @@ public class Hero extends Entity
         if (getIsBlinking())
             return;
 
-        _healthPercent -= damagePercent;
+        _health -= damagePercent;
 
         //Start blinking!
         startBlinking(Constants.PlayerBlinksOnHitMs);
 
-        if (_healthPercent <= 0.001f)
+        if (_health <= 0.001f)
         {
-            _healthPercent = 0.0f;
+            _health = 0.0f;
             _gorlorn.die();
         }
     }
@@ -65,14 +65,14 @@ public class Hero extends Entity
      */
     public void restoreHealth()
     {
-        _healthPercent = Math.min(1.0f, _healthPercent + Constants.HeartHealthRestore);
+        _health = Math.min(1.0f, _health + Constants.HeartHealthRestore);
 
         //TODO: do fancy effect with red particles falling
     }
 
     public float getHealthPercent()
     {
-        return _healthPercent;
+        return _health / Constants.PlayerHealth;
     }
 
     @Override

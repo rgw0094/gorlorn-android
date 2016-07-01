@@ -106,16 +106,16 @@ public class Entity
 
         canvas.drawBitmap(Sprite, X - (float) Width / 2.0f, Y - (float) Height / 2.0f, paint);
 
-        if (Gorlorn.IsDebugMode)
-        {
-            if (_hitBoxPaint == null)
-            {
-                _hitBoxPaint = new Paint();
-                _hitBoxPaint.setARGB(255, 0, 255, 0);
-                _hitBoxPaint.setStyle(Paint.Style.STROKE);
-            }
-            canvas.drawRect(_hitBox, _hitBoxPaint);
-        }
+//        if (Gorlorn.IsDebugMode)
+//        {
+//            if (_hitBoxPaint == null)
+//            {
+//                _hitBoxPaint = new Paint();
+//                _hitBoxPaint.setARGB(255, 0, 255, 0);
+//                _hitBoxPaint.setStyle(Paint.Style.STROKE);
+//            }
+//            canvas.drawRect(_hitBox, _hitBoxPaint);
+//        }
     }
 
     /**

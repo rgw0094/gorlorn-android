@@ -257,8 +257,8 @@ public class HUD
         if (_gorlorn.IsDebugMode)
         {
             //Show button states
-            canvas.drawText(MessageFormat.format("Left  {0}", _isLeftPressed ? "D" : "U"), 10, 400, _scorePaint);
-            canvas.drawText(MessageFormat.format("Right {0}", _isRightPressed ? "D" : "U"), 10, 460, _scorePaint);
+            canvas.drawText(MessageFormat.format("Left  {0}", _isLeftPressed ? "D" : "U"), 10, 400, Gorlorn.DebugTextPaint);
+            canvas.drawText(MessageFormat.format("Right {0}", _isRightPressed ? "D" : "U"), 10, 460, Gorlorn.DebugTextPaint);
         }
 
         for (Points points : _points)

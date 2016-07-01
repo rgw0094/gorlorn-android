@@ -19,7 +19,6 @@ import gorlorn.activities.R;
 public class BulletManager
 {
     private Gorlorn _gorlorn;
-    private Bitmap _projectileSprite;
     private java.util.Random _random = new Random();
     private LinkedList<Bullet> _bullets = new LinkedList<>();
     private float _speed;
@@ -34,12 +33,12 @@ public class BulletManager
     {
         _gorlorn = gorlorn;
         _speed = ((_gorlorn.ScreenWidth + _gorlorn.ScreenHeight) / 2.0f) * Constants.BulletSpeed;
-        _projectileSprite = gorlorn.createBitmapByWidthPercent(R.drawable.bullet, Constants.BulletDiameter);
+
     }
 
     public void FireBullet(float originX, float originY, double angle)
     {
-        _bullets.add(new Bullet(_gorlorn, _projectileSprite, originX, originY, _speed, angle, 1, 0));
+        _bullets.add(new Bullet(_gorlorn, Bitmaps.Bullet, originX, originY, _speed, angle, 1, 0));
     }
 
     public void update(float dt)
@@ -72,10 +71,10 @@ public class BulletManager
                 {
                     double angle = _random.nextDouble() * Math.PI * 2.0;
 
-                    int chainCount = bullet.getChainCount() + 1;
+                    int chainCount = (int)Math.min(Constants.MaxComboSize, bullet.getChainCount() + 1);
                     _gorlorn.getGameStats().highestCombo = Math.max(chainCount, _gorlorn.getGameStats().highestCombo);
 
-                    newBullets.add(new Bullet(_gorlorn, _projectileSprite, killedEnemy.X, killedEnemy.Y, _speed, angle, chainCount, Constants.ChainBulletLifeTimeMs));
+                    newBullets.add(new Bullet(_gorlorn, Bitmaps.BulletCombo, killedEnemy.X, killedEnemy.Y, _speed, angle, chainCount, Constants.ChainBulletLifeTimeMs));
                 }
             }
         }

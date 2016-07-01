@@ -19,7 +19,6 @@ public class GorlornStats
     public long highestCombo;
     public long gamesPlayed;
     public long heartsCollected;
-    public long heartsSpawned;
     public long timePlayedMs;
 
     /**
@@ -43,7 +42,6 @@ public class GorlornStats
         highestCombo = json.getLong("HighestCombo");
         gamesPlayed = json.getLong("GamesPlayed");
         heartsCollected = json.getLong("HeartsCollected");
-        heartsSpawned = json.getLong("HeartsSpawned");
         timePlayedMs = json.getLong("TimePlayedMs");
     }
 
@@ -56,7 +54,6 @@ public class GorlornStats
         enemiesVanquished += stats.enemiesVanquished;
         gamesPlayed++;
         heartsCollected += stats.heartsCollected;
-        heartsSpawned += stats.heartsSpawned;
         timePlayedMs += stats.timePlayedMs;
     }
 
@@ -94,7 +91,6 @@ public class GorlornStats
         json.put("HighestCombo", highestCombo);
         json.put("GamesPlayed", gamesPlayed);
         json.put("HeartsCollected", heartsCollected);
-        json.put("HeartsSpawned", heartsSpawned);
         json.put("TimePlayedMs", timePlayedMs);
 
         return json;

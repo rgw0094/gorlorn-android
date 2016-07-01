@@ -38,7 +38,6 @@ public class HeartManager
      */
     public void spawnHeart(int x, int y)
     {
-        _gorlorn.getGameStats().heartsSpawned++;
         _hearts.add(new Heart(_gorlorn, _heartSprite, x, y));
     }
 

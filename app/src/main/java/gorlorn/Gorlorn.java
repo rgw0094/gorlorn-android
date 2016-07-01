@@ -1,6 +1,8 @@
 package gorlorn;
 
 import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
 import android.os.Handler;
 import android.os.Looper;
 import android.view.MotionEvent;
@@ -31,7 +33,8 @@ import gorlorn.activities.R;
  */
 public class Gorlorn extends RenderLoopBase
 {
-    public static boolean IsDebugMode = false;
+    public static boolean IsDebugMode = true;
+    public static Paint DebugTextPaint;
 
     //region Private Variables
 
@@ -126,6 +129,15 @@ public class Gorlorn extends RenderLoopBase
      */
     public void startGame()
     {
+        if (IsDebugMode && DebugTextPaint == null)
+        {
+            DebugTextPaint = new Paint();
+            DebugTextPaint.setColor(Color.WHITE);
+            DebugTextPaint.setStyle(Paint.Style.FILL);
+            DebugTextPaint.setAntiAlias(true);
+            DebugTextPaint.setTextSize(getYFromPercent(0.05f));
+        }
+
         _timeStartedMs = new Date().getTime();
         _currentStats = new GorlornStats();
 

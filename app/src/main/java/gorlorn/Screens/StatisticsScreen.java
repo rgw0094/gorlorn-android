@@ -116,11 +116,11 @@ public class StatisticsScreen extends ScreenBase
 
         String[] strings = new String[]
                 {
-                        "High Score: ", getHighScore(), "Shots Fired: ", getShotsFired(),
-                        "Score: ", getScore(), "Enemies Killed: ", getEnemiesKilled(),
-                        "Highest Combo: ", getHighestCombo(), "Hearts Spawned: ", getHeartsSpawned(),
-                        "Time Played: ", getTimePlayed(), "Hearts Collected: ", getHeartsCollected(),
-                        "Games Played: ", getGamesPlayed(),
+                        "High Score: ", getHighScore(), "", "",
+                        "Career Score: ", getScore(), "", "",
+                        "Highest Combo: ", getHighestCombo(), "Shots Fired: ", getShotsFired(),
+                        "Time Played: ", getTimePlayed(), "Enemies Killed: ", getEnemiesKilled(),
+                        "Games Played: ", getGamesPlayed(), "Hearts Collected: ", getHeartsCollected(),
                 };
 
         _statsPaint.setTextSize(_gorlorn.getYFromPercent(0.06f * _statsSizePercent));
@@ -132,7 +132,6 @@ public class StatisticsScreen extends ScreenBase
             for (int col = 0; col < columnWidthPercents.length; col++)
             {
                 int index = row * columnWidthPercents.length + col;
-                if (index == 18) break;
                 canvas.drawText(strings[index], x, y, _statsPaint);
                 x += (bounds.width() * columnWidthPercents[col]);
             }
@@ -186,11 +185,6 @@ public class StatisticsScreen extends ScreenBase
     private String getTimePlayed()
     {
         return new SimpleDateFormat("HH:mm:ss").format(new Date(_stats.timePlayedMs));
-    }
-
-    private String getHeartsSpawned()
-    {
-        return NumberFormat.getNumberInstance().format(_stats.heartsSpawned);
     }
 
     private String getHeartsCollected()

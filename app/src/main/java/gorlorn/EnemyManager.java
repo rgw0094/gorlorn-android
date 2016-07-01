@@ -3,13 +3,13 @@ package gorlorn;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 
+import java.text.DecimalFormat;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.Random;
 
 import gorlorn.Entities.Bullet;
 import gorlorn.Entities.Enemy;
-import gorlorn.Entities.Entity;
 import gorlorn.activities.R;
 
 /**
@@ -21,8 +21,9 @@ public class EnemyManager
     private LinkedList<Enemy> _enemies;
     private Bitmap _enemySprite;
     private long _timeLastEnemySpawnedMs;
-    private long _enemySpawnIntervalMs = Constants.StartingEnemySpawnIntervalMs;
+    private float _enemySpawnIntervalMs = Constants.StartingEnemySpawnIntervalMs;
     private float _enemySpeed;
+    private long _timeLastRateUpdateMs;
 
     public EnemyManager(Gorlorn gorlorn)
     {
@@ -66,6 +67,12 @@ public class EnemyManager
         {
             enemy.draw(canvas);
         }
+
+        if (Gorlorn.IsDebugMode)
+        {
+            canvas.drawText("EDelay: " + new DecimalFormat("#.####").format(_enemySpawnIntervalMs), _gorlorn.getXFromPercent(0.001f), _gorlorn.getYFromPercent(0.6f), Gorlorn.DebugTextPaint);
+            canvas.drawText("ESpeed: " + new DecimalFormat("#.####").format(_enemySpeed), _gorlorn.getXFromPercent(0.001f), _gorlorn.getYFromPercent(0.65f), Gorlorn.DebugTextPaint);
+        }
     }
 
     /**
@@ -95,6 +102,13 @@ public class EnemyManager
         {
             _enemies.remove(deadEnemy);
         }
+
+        if (now - _timeLastRateUpdateMs > 1000)
+        {
+            _enemySpawnIntervalMs *= Constants.EnemySpawnRateAcceleration;
+            _enemySpeed += Constants.EnemySpeedIncrement;
+            _timeLastRateUpdateMs = now;
+        }
     }
 
     /**
@@ -115,8 +129,6 @@ public class EnemyManager
         newEnemy.Vy = speed * (float) Math.sin(angle);
 
         _enemies.add(newEnemy);
-        _enemySpawnIntervalMs *= Constants.EnemySpawnRateAcceleration;
-        _enemySpeed *= Constants.EnemySpeedMultiplier;
     }
 
     private double GetEnemyAngle(Random random)
