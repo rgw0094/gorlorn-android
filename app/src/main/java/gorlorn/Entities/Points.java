@@ -26,13 +26,12 @@ public class Points
     private long _lifeTimeMs;
 
     /**
-     *
      * @param gorlorn
      * @param points
      * @param x
      * @param y
      */
-    public Points(Gorlorn gorlorn, long points, float x, float y)
+    public Points(Gorlorn gorlorn, long points, int chainCount, float x, float y)
     {
         _gorlorn = gorlorn;
         _pointString = MessageFormat.format("{0}", points);
@@ -43,21 +42,20 @@ public class Points
         _paint = new Paint();
         _paint.setStyle(Paint.Style.FILL);
         _paint.setAntiAlias(true);
+        _paint.setTextSize(_gorlorn.getYFromPercent(0.03f + (float)chainCount * 0.005f));
 
         //If its a big chain make the points red
         if (points > Math.pow(2, 5))
         {
             _paint.setARGB(255, 255, 0, 0);
-            _paint.setTextSize(50);
             _lifeTimeMs = 1250;
-            _speed = (float)_gorlorn.ScreenWidth * 0.15f;
+            _speed = (float) _gorlorn.ScreenWidth * 0.15f;
         }
         else
         {
             _paint.setARGB(255, 255, 255, 255);
-            _paint.setTextSize(40);
             _lifeTimeMs = 800;
-            _speed = (float)_gorlorn.ScreenHeight * 0.1f;
+            _speed = (float) _gorlorn.ScreenHeight * 0.1f;
         }
     }
 

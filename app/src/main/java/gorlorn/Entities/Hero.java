@@ -42,13 +42,13 @@ public class Hero extends Entity
         Y = gorlorn.getYFromPercent(0.995f - Constants.HeroDiameter);
     }
 
-    public void dealDamage(float damagePercent)
+    public void dealDamage(float damage)
     {
         //The hero is invincible while recovering from previous damage!
         if (getIsBlinking())
             return;
 
-        _health -= damagePercent;
+        _health -= damage;
 
         //Start blinking!
         startBlinking(Constants.PlayerBlinksOnHitMs);
@@ -79,12 +79,6 @@ public class Hero extends Entity
     public void draw(Canvas canvas)
     {
         super.draw(canvas);
-
-        if (_gorlorn.IsDebugMode)
-        {
-            //Show movement state
-            canvas.drawText(MessageFormat.format("Dir  {0}", _direction), 10, 520, _gorlorn.getHud()._scorePaint);
-        }
     }
 
     @Override

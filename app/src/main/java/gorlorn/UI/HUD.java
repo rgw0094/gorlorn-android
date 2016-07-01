@@ -221,7 +221,7 @@ public class HUD
         long points = (long) Math.pow(2, chainCount);
         _gorlorn.getGameStats().score += points;
 
-        _points.add(new Points(_gorlorn, points, x, y));
+        _points.add(new Points(_gorlorn, points, chainCount, x, y));
     }
 
     /**

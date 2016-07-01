@@ -30,19 +30,19 @@ public class Constants
     public static float HeartSpeed = 0.2f;
 
     //Times
-    public static int PlayerFrozenOnHitMs = 1200;
-    public static int PlayerBlinksOnHitMs = 2000;
+    public static int PlayerFrozenOnHitMs = 2000;
+    public static int PlayerBlinksOnHitMs = 3000;
     public static int ChainBulletLifeTimeMs = 200;
 
     //region Misc
 
     public static long StartingEnemySpawnIntervalMs = 450;
     public static float EnemySpawnRateAcceleration = 0.996f;    //The enemy spawn rate is multiplied by this every second
-    public static float EnemySpeedIncrement = 0.001f;   //This is added to the starting enemy speed each second
+    public static float EnemySpeedIncrement = 0.001f;           //This is added to the starting enemy speed each second
     public static long MaxComboSize = 20;
     public static float EnemyDamage = 20.0f;
     public static float PlayerHealth = 120.0f;
-    public static float HeartHealthRestore = 0.2f;
+    public static float HeartHealthRestore = 40.0f;
     public static long MinShotIntervalMs = 200;
     public static int StartingChainCountToSpawnHeart = 4;
 
