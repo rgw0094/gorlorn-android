@@ -65,6 +65,7 @@ public class Gorlorn extends RenderLoopBase
         setScreen(new MenuScreen(this));
         _currentStats = new GorlornStats();
         _cumulativeStats = GorlornStats.load(activity);
+        requestAd();
     }
 
     //endregion
@@ -322,16 +323,7 @@ public class Gorlorn extends RenderLoopBase
             @Override
             public void run()
             {
-                AdView mAdView = (AdView) _activity.findViewById(R.id.adView);
-                mAdView.setVisibility(View.VISIBLE);
-
-                //AdRequest adRequest = new AdRequest.Builder().build();
-                AdRequest adRequest = new AdRequest.Builder()
-                        .addTestDevice(AdRequest.DEVICE_ID_EMULATOR)        // All emulators
-                        .addTestDevice("B002DA6CED0109ADA1321B29C4DEE7B1")
-                        .build();
-                mAdView.loadAd(adRequest);
-                int f = 0;
+                _activity.findViewById(R.id.adView).setVisibility(View.VISIBLE);
             }
         });
     }
@@ -343,8 +335,50 @@ public class Gorlorn extends RenderLoopBase
             @Override
             public void run()
             {
-                AdView mAdView = (AdView) _activity.findViewById(R.id.adView);
-                mAdView.setVisibility(View.GONE);
+                _activity.findViewById(R.id.adView).setVisibility(View.GONE);
+            }
+        });
+    }
+
+    /**
+     * Requests an ad so its ready next time we need to display it
+     */
+    public void requestAd()
+    {
+        //AdRequest adRequest = new AdRequest.Builder().build(); //Real request!!
+//        AdRequest adRequest = new AdRequest.Builder()
+//                .addTestDevice(AdRequest.DEVICE_ID_EMULATOR)        // All emulators
+//                .addTestDevice("B002DA6CED0109ADA1321B29C4DEE7B1")
+//                .build();
+//        ().loadAd(adRequest);
+        Thread adThread = new Thread()
+        {
+            @Override
+            public void run()
+            {
+                loadAd();
+            }
+        };
+        adThread.start();
+    }
+
+    private void loadAd()
+    {
+        // Banner Ad
+        final AdView adView = (AdView) _activity.findViewById(R.id.adView);
+
+        // Request for ads
+        final AdRequest adRequest = new AdRequest.Builder()
+                .addTestDevice(AdRequest.DEVICE_ID_EMULATOR)        // All emulators
+                .addTestDevice("B002DA6CED0109ADA1321B29C4DEE7B1")
+                .build();
+
+        _activity.runOnUiThread(new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                adView.loadAd(adRequest);
             }
         });
     }

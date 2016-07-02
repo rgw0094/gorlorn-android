@@ -35,16 +35,15 @@ public class GorlornActivity extends Activity
 
         setContentView(R.layout.activity_menu);
 
-        RelativeLayout root = (RelativeLayout) findViewById(R.id.menu_layout);
+        MobileAds.initialize(getApplicationContext(), "ca-app-pub-8965087743383168~1842466939");
 
         _gorlorn = new Gorlorn(this);
 
+        RelativeLayout root = (RelativeLayout) findViewById(R.id.menu_layout);
         root.addView(new GameLoopView(_gorlorn), 0,
                 new WindowManager.LayoutParams(
                         RelativeLayout.LayoutParams.MATCH_PARENT,
                         RelativeLayout.LayoutParams.MATCH_PARENT));
-
-        MobileAds.initialize(getApplicationContext(), "ca-app-pub-8965087743383168~1842466939");
     }
 
     @Override

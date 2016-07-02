@@ -2,9 +2,6 @@ package gorlorn.Screens;
 
 import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.Paint;
-import android.text.Layout;
-import android.text.StaticLayout;
 import android.text.TextPaint;
 import android.view.Gravity;
 import android.view.View;
@@ -28,6 +25,7 @@ public class AboutScreen extends ScreenBase
     private static int GridAnimationDurationMs = 300;
     private TextPaint _versionPaint;
     private TextView _messageView;
+    private boolean _adShownYet;
 
 
     /**
@@ -49,7 +47,7 @@ public class AboutScreen extends ScreenBase
         _messageView.setTextSize(gorlorn.getYFromPercent(0.02f));
         _messageView.setGravity(Gravity.CENTER_HORIZONTAL);
 
-        String message = "This simple game was created for fun and to learn Android development. To check out some REAL (also free!) games, go to: www.smileysmazehunt.com.";
+        String message = "This simple game was created for fun and to learn Android development. To check out some REAL (and free!) games, go to: www.smileysmazehunt.com";
         _messageView.setText(message);
         _messageView.setDrawingCacheEnabled(true);
         _messageView.measure(View.MeasureSpec.makeMeasureSpec(gorlorn.getXFromPercent(0.7f), View.MeasureSpec.EXACTLY), View.MeasureSpec.makeMeasureSpec(gorlorn.ScreenHeight, View.MeasureSpec.EXACTLY));
@@ -61,7 +59,6 @@ public class AboutScreen extends ScreenBase
     {
         _timeEnteredMs = new Date().getTime();
         _gorlorn.getBackground().retractGrid(GridAnimationDurationMs);
-        _gorlorn.showAd();
     }
 
     @Override
@@ -76,8 +73,15 @@ public class AboutScreen extends ScreenBase
     @Override
     public boolean update(float dt)
     {
+        long now = new Date().getTime();
+        if (!_adShownYet && now - _timeEnteredMs > GridAnimationDurationMs)
+        {
+            _gorlorn.showAd();
+            _adShownYet = true;
+        }
+
         //Return true once leave() has been requested and the background grid has finished extending
-        return _timeLeftMs != 0 && new Date().getTime() - _timeLeftMs > GridAnimationDurationMs;
+        return _timeLeftMs != 0 && now - _timeLeftMs > GridAnimationDurationMs;
     }
 
     @Override

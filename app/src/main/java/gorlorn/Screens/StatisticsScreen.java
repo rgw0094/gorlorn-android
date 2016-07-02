@@ -7,6 +7,7 @@ import android.graphics.Rect;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.concurrent.TimeUnit;
 
 import gorlorn.Gorlorn;
 import gorlorn.GorlornStats;
@@ -71,7 +72,8 @@ public class StatisticsScreen extends ScreenBase
         switch (_phase)
         {
             case Entering:
-                _statsSizePercent = Math.min(1.0f, _statsSizePercent + (1000.0f / (float) BackgroundRetractMs) * dt * 1.05f);
+                //Zoom in the stats slightly slower than the grid retracts
+                _statsSizePercent = Math.min(1.0f, _statsSizePercent + (1000.0f / (float) BackgroundRetractMs) * dt * 0.9f);
                 if (timeInPhase() > BackgroundRetractMs)
                 {
                     _statsSizePercent = 1.0f;
@@ -184,7 +186,10 @@ public class StatisticsScreen extends ScreenBase
 
     private String getTimePlayed()
     {
-        return new SimpleDateFormat("HH:mm:ss").format(new Date(_stats.timePlayedMs));
+        return String.format("%02d:%02d:%02d",
+                TimeUnit.MILLISECONDS.toHours(_stats.timePlayedMs),
+                TimeUnit.MILLISECONDS.toMinutes(_stats.timePlayedMs) - TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours(_stats.timePlayedMs)),
+                TimeUnit.MILLISECONDS.toSeconds(_stats.timePlayedMs) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(_stats.timePlayedMs)));
     }
 
     private String getHeartsCollected()

@@ -55,11 +55,13 @@ public class HUD
 
         //Set up the movement buttons
         int buttonHitBoxDiameter = gorlorn.getXFromPercent(Constants.ButtonDiameter);
-        _leftButtonHitBox = new Rect(0, gorlorn.ScreenHeight - buttonHitBoxDiameter, buttonHitBoxDiameter, gorlorn.ScreenHeight);
-        _rightButtonHitBox = new Rect(gorlorn.ScreenWidth - buttonHitBoxDiameter, gorlorn.ScreenHeight - buttonHitBoxDiameter, gorlorn.ScreenWidth, gorlorn.ScreenHeight);
-
         _leftButtonSprite = gorlorn.createBitmapByWidthPercent(R.drawable.left_button, Constants.ButtonDiameter);
         _rightButtonSprite = gorlorn.createBitmapByWidthPercent(R.drawable.right_button, Constants.ButtonDiameter);
+
+        //Make the actual collision box bigger than the visual buttons
+        buttonHitBoxDiameter = (int)((float)buttonHitBoxDiameter * 1.2f);
+        _leftButtonHitBox = new Rect(0, gorlorn.ScreenHeight - buttonHitBoxDiameter, buttonHitBoxDiameter, gorlorn.ScreenHeight);
+        _rightButtonHitBox = new Rect(gorlorn.ScreenWidth - buttonHitBoxDiameter, gorlorn.ScreenHeight - buttonHitBoxDiameter, gorlorn.ScreenWidth, gorlorn.ScreenHeight);
 
         _scorePaint = gorlorn.createTextPaint(0.08f);
         _highScorePaint = gorlorn.createTextPaint(0.05f);

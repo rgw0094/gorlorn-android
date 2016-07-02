@@ -44,7 +44,7 @@ public class Constants
     public static float PlayerHealth = 120.0f;
     public static float HeartHealthRestore = 40.0f;
     public static long MinShotIntervalMs = 200;
-    public static int StartingChainCountToSpawnHeart = 1;
+    public static int StartingChainCountToSpawnHeart = 4;
 
     //endregion
 }
