@@ -100,6 +100,8 @@ public class GorlornStats
     {
         try
         {
+            activity.getApplicationContext().getSharedPreferences("GorlornStatistics", 0).edit().clear().commit();
+
             SharedPreferences prefs = activity.getApplicationContext().getSharedPreferences("GorlornStatistics", Context.MODE_PRIVATE);
             String json = prefs.getString("GorlornStatistics", "");
             if (json != "")

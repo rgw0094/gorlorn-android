@@ -27,7 +27,7 @@ public class Constants
     public static float HeroSpeed = 0.9f;
     public static float HeroAcceleration = 8.0f;        //Percent of the screen width accelerated per second
     public static float BulletSpeed = 0.8f;
-    public static float HeartSpeed = 0.2f;
+    public static float HeartSpeed = 0.3f;
 
     //Times
     public static int PlayerFrozenOnHitMs = 2000;
@@ -44,7 +44,7 @@ public class Constants
     public static float PlayerHealth = 120.0f;
     public static float HeartHealthRestore = 40.0f;
     public static long MinShotIntervalMs = 200;
-    public static int StartingChainCountToSpawnHeart = 4;
+    public static int StartingChainCountToSpawnHeart = 1;
 
     //endregion
 }
