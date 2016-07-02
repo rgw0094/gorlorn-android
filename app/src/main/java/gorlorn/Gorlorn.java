@@ -16,6 +16,7 @@ import java.util.Random;
 
 import gorlorn.Entities.Hero;
 import gorlorn.Framework.RenderLoopBase;
+import gorlorn.Screens.AboutScreen;
 import gorlorn.Screens.GameScreen;
 import gorlorn.Screens.MenuScreen;
 import gorlorn.UI.Background;
@@ -172,6 +173,14 @@ public class Gorlorn extends RenderLoopBase
             return;
 
         setScreen(new MenuScreen(this));
+    }
+
+    /**
+     * Shows the About screen!
+     */
+    public void showAboutScreen()
+    {
+        setScreen(new AboutScreen(this));
     }
 
     /**

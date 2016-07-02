@@ -7,6 +7,9 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.text.TextPaint;
 import android.view.MotionEvent;
 
 import java.io.PrintWriter;
@@ -45,7 +48,7 @@ public abstract class RenderLoopBase
         PrintWriter pw = new PrintWriter(sw);
         e.printStackTrace(pw);
 
-        AlertDialog.Builder dlgAlert  = new AlertDialog.Builder(_activity.getApplicationContext());
+        AlertDialog.Builder dlgAlert = new AlertDialog.Builder(_activity.getApplicationContext());
         dlgAlert.setMessage(sw.toString());
         dlgAlert.setTitle("ERROR IN PROGRAM");
         dlgAlert.setPositiveButton("OK", null);
@@ -92,6 +95,32 @@ public abstract class RenderLoopBase
     {
         Resources resources = _activity.getApplicationContext().getResources();
         return Bitmap.createScaledBitmap(BitmapFactory.decodeResource(resources, id), width, height, true);
+    }
+
+    /**
+     * Creates a paint for drawing white text where the size is a given percentage of the screen  height
+     * @param yScreenPercent
+     * @return
+     */
+    public TextPaint createTextPaint(float yScreenPercent)
+    {
+        return createTextPaint(Color.WHITE, yScreenPercent);
+    }
+
+    /**
+     * Creates a paint for drawing text where the size is a given percentage of the screen  height
+     * @param color
+     * @param yScreenPercent
+     * @return
+     */
+    public TextPaint createTextPaint(int color, float yScreenPercent)
+    {
+        TextPaint paint = new TextPaint();
+        paint.setColor(color);
+        paint.setStyle(Paint.Style.FILL);
+        paint.setAntiAlias(true);
+        paint.setTextSize(getYFromPercent(yScreenPercent));
+        return paint;
     }
 
     /**

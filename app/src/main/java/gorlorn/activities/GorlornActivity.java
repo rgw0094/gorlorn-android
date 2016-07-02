@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.RelativeLayout;
+
 import com.google.android.gms.ads.MobileAds;
 
 import gorlorn.Framework.GameLoopView;
@@ -43,7 +44,7 @@ public class GorlornActivity extends Activity
                         RelativeLayout.LayoutParams.MATCH_PARENT,
                         RelativeLayout.LayoutParams.MATCH_PARENT));
 
-        MobileAds.initialize( getApplicationContext(), "ca-app-pub-8965087743383168~1842466939");
+        MobileAds.initialize(getApplicationContext(), "ca-app-pub-8965087743383168~1842466939");
     }
 
     @Override
@@ -69,6 +70,6 @@ public class GorlornActivity extends Activity
 
     public void showAboutScreen(View view)
     {
-
+        _gorlorn.showAboutScreen();
     }
 }

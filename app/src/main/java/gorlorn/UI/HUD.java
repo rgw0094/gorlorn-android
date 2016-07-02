@@ -61,18 +61,8 @@ public class HUD
         _leftButtonSprite = gorlorn.createBitmapByWidthPercent(R.drawable.left_button, Constants.ButtonDiameter);
         _rightButtonSprite = gorlorn.createBitmapByWidthPercent(R.drawable.right_button, Constants.ButtonDiameter);
 
-        //TODO: factory for this
-        _scorePaint = new Paint();
-        _scorePaint.setColor(Color.WHITE);
-        _scorePaint.setStyle(Paint.Style.FILL);
-        _scorePaint.setAntiAlias(true);
-        _scorePaint.setTextSize(_gorlorn.getYFromPercent(0.08f));
-
-        _highScorePaint = new Paint();
-        _highScorePaint.setColor(Color.WHITE);
-        _highScorePaint.setStyle(Paint.Style.FILL);
-        _highScorePaint.setAntiAlias(true);
-        _highScorePaint.setTextSize(_gorlorn.getYFromPercent(0.05f));
+        _scorePaint = gorlorn.createTextPaint(0.08f);
+        _highScorePaint = gorlorn.createTextPaint(0.05f);
 
         int healthBarLength = _gorlorn.getXFromPercent(Constants.HealthBarLength);
         int healthBarThickness = _gorlorn.getYFromPercent(Constants.HealthBarThickness);
