@@ -246,7 +246,7 @@ public class HUD
         drawButton(canvas, _leftButtonSprite, _leftButtonHitBox);
         drawButton(canvas, _rightButtonSprite, _rightButtonHitBox);
 
-        if (_gorlorn.IsDebugMode)
+        if (Constants.IsDebugMode)
         {
             //Show button states
             canvas.drawText(MessageFormat.format("Left  {0}", _isLeftPressed ? "D" : "U"), 10, 400, Gorlorn.DebugTextPaint);

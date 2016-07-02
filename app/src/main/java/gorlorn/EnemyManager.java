@@ -68,7 +68,7 @@ public class EnemyManager
             enemy.draw(canvas);
         }
 
-        if (Gorlorn.IsDebugMode)
+        if (Constants.IsDebugMode)
         {
             canvas.drawText("EDelay: " + new DecimalFormat("#.####").format(_enemySpawnIntervalMs), _gorlorn.getXFromPercent(0.001f), _gorlorn.getYFromPercent(0.6f), Gorlorn.DebugTextPaint);
             canvas.drawText("ESpeed: " + new DecimalFormat("#.####").format(_enemySpeed), _gorlorn.getXFromPercent(0.001f), _gorlorn.getYFromPercent(0.65f), Gorlorn.DebugTextPaint);

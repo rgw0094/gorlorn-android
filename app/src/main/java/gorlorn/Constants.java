@@ -5,6 +5,11 @@ package gorlorn;
  */
 public class Constants
 {
+    //Debug flags
+    public static boolean IsDebugMode = false;
+    public static boolean AutoClearStats = false;
+    public static boolean DieInOneHit = false;
+
     //region Sizes
 
     //Diameters are percentages of screen width

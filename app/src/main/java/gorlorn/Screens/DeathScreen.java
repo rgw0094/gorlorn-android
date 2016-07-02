@@ -8,8 +8,10 @@ import android.graphics.Paint;
 
 import java.util.Date;
 
+import gorlorn.Bitmaps;
 import gorlorn.Gorlorn;
 import gorlorn.UI.Button;
+import gorlorn.UI.FloatingNumbers;
 import gorlorn.activities.R;
 
 /**
@@ -22,42 +24,40 @@ public class DeathScreen extends ScreenBase
     private enum Phase
     {
         BackgroundFadeIn,
-        TextFadeIn,
         RedFlash,
         Done
     }
 
-    private int _textFadeDurationMs = 200;
-    private int _redFlashDuration = 100;
+    private int _redFlashDuration = 90;
 
     private long _timeEnteredPhaseMs;
     private float _backgroundOpacity = 0.0f;
     private Phase _currentPhase;
-    private Paint _textPaint;
     private Paint _heroPaint = new Paint();
     private Button _tryAgainButton;
-    private boolean _newHighScore;
+    private Paint _highScorePaint;
+    private FloatingNumbers _highScoreFloatingNumbers;
 
     /**
      * Constructs a new DeathScreen.
+     *
      * @param gorlorn
-     * @param newHighScore    Whether or not the user achieved a new high score this game
+     * @param newHighScore Whether or not the user achieved a new high score this game
      */
     public DeathScreen(Gorlorn gorlorn, boolean newHighScore)
     {
         super(gorlorn);
-        _newHighScore = newHighScore; //TODO: fancy effect!
+        if (newHighScore)
+        {
+            _highScorePaint = gorlorn.createTextPaint(0.10f);
+            _highScorePaint.setTextAlign(Paint.Align.CENTER);
+            _highScorePaint.setARGB(255, 95, 152, 234);
+            _highScoreFloatingNumbers = new FloatingNumbers(gorlorn, gorlorn.getGameStats().score, gorlorn.getYFromPercent(0.225f), 0.04f, 0.12f, 95, 152, 234);
+        }
 
         _heroPaint.setARGB(255, 255, 255, 255);
-
-        _textPaint = new Paint();
-        _textPaint.setARGB(255, 255, 255, 255);
-        _textPaint.setStyle(Paint.Style.FILL);
-        _textPaint.setTextAlign(Paint.Align.CENTER);
-        _textPaint.setAntiAlias(true);
-        _textPaint.setTextSize(200);
-
         _tryAgainButton = new Button(gorlorn, R.drawable.tryagain, 0.35f, 0.35f / 4.25f, gorlorn.getXFromPercent(0.78f), gorlorn.getYFromPercent(0.9f));
+        //TODO: statistics button
     }
 
     @Override
@@ -81,13 +81,6 @@ public class DeathScreen extends ScreenBase
             if (_backgroundOpacity >= 1.0f)
             {
                 _backgroundOpacity = 1.0f;
-                enterPhase(Phase.TextFadeIn);
-            }
-        }
-        else if (_currentPhase == Phase.TextFadeIn)
-        {
-            if (new Date().getTime() >= _timeEnteredPhaseMs + _textFadeDurationMs)
-            {
                 enterPhase(Phase.RedFlash);
             }
         }
@@ -100,10 +93,20 @@ public class DeathScreen extends ScreenBase
         }
         else if (_currentPhase == Phase.Done)
         {
-            _tryAgainButton.update();
-            if (_tryAgainButton.isClicked())
+//            _tryAgainButton.update();
+//            if (_tryAgainButton.isClicked())
+//            {
+//                _gorlorn.startGame();
+//            }
+
+            if (_gorlorn.getHud().isClicked())
             {
                 _gorlorn.startGame();
+            }
+
+            if (_highScoreFloatingNumbers != null)
+            {
+                _highScoreFloatingNumbers.update(dt);
             }
         }
         return false;
@@ -132,17 +135,22 @@ public class DeathScreen extends ScreenBase
         float y = _gorlorn.getHero().Y - (float) _gorlorn.getHero().Height / 2.0f;
         canvas.drawBitmap(_gorlorn.getHero().Sprite, x, y, _heroPaint);
 
-        if (_currentPhase == Phase.TextFadeIn)
+        if (_currentPhase == Phase.RedFlash || _currentPhase == Phase.Done)
         {
-            float fadeInPercent = Math.min(1.0f, (float) (new Date().getTime() - _timeEnteredPhaseMs) / (float) _textFadeDurationMs);
-            canvas.drawText("YOU HAVE DIED", _gorlorn.getXFromPercent(0.5f), _gorlorn.getYFromPercent(fadeInPercent * 0.5f), _textPaint);
-        }
-        else if (_currentPhase == Phase.RedFlash || _currentPhase == Phase.Done)
-        {
-            canvas.drawText("YOU HAVE DIED", _gorlorn.getXFromPercent(0.5f), _gorlorn.getYFromPercent(0.5f), _textPaint);
+            //canvas.drawText("YOU HAVE DIED", _gorlorn.getXFromPercent(0.5f), _gorlorn.getYFromPercent(0.5f), _textPaint);
             if (_currentPhase == Phase.Done)
             {
-                _tryAgainButton.draw(canvas);
+                canvas.drawBitmap(Bitmaps.DeathText,
+                        0.5f * ((float) _gorlorn.ScreenWidth - (float) Bitmaps.DeathText.getWidth()),
+                        0.5f * ((float) _gorlorn.ScreenHeight - (float) Bitmaps.DeathText.getHeight()), null);
+
+                //_tryAgainButton.draw(canvas);
+
+                if (_highScoreFloatingNumbers != null)
+                {
+                    canvas.drawText("New High Score!", _gorlorn.getXFromPercent(0.5f), _gorlorn.getYFromPercent(0.1f), _highScorePaint);
+                    _highScoreFloatingNumbers.draw(canvas);
+                }
             }
         }
     }

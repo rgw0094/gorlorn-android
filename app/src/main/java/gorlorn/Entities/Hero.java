@@ -53,7 +53,7 @@ public class Hero extends Entity
         //Start blinking!
         startBlinking(Constants.PlayerBlinksOnHitMs);
 
-        if (_health <= 0.001f)
+        if (_health <= 0.001f || Constants.DieInOneHit)
         {
             _health = 0.0f;
             _gorlorn.die();

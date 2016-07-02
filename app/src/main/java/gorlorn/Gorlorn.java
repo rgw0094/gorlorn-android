@@ -34,7 +34,6 @@ import gorlorn.activities.R;
  */
 public class Gorlorn extends RenderLoopBase
 {
-    public static boolean IsDebugMode = true;
     public static Paint DebugTextPaint;
 
     //region Private Variables
@@ -131,7 +130,7 @@ public class Gorlorn extends RenderLoopBase
      */
     public void startGame()
     {
-        if (IsDebugMode && DebugTextPaint == null)
+        if (Constants.IsDebugMode && DebugTextPaint == null)
         {
             DebugTextPaint = new Paint();
             DebugTextPaint.setColor(Color.WHITE);

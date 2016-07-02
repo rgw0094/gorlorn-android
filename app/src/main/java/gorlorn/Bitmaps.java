@@ -17,6 +17,7 @@ public class Bitmaps
     public static Bitmap Title;
     public static Bitmap Bullet;
     public static Bitmap BulletCombo;
+    public static Bitmap DeathText;
 
     public static void Load(RenderLoopBase renderLoop)
     {
@@ -28,6 +29,7 @@ public class Bitmaps
         Title = renderLoop.createBitmap(R.drawable.title, renderLoop.getXFromPercent(0.7f), renderLoop.getYFromPercent(0.7f / 4.347826086956522f));
         Bullet = renderLoop.createBitmapByWidthPercent(R.drawable.bullet, Constants.BulletDiameter);
         BulletCombo = renderLoop.createBitmapByWidthPercent(R.drawable.bullet_combo, Constants.BulletDiameter);
+        DeathText = renderLoop.createBitmap(R.drawable.death_text, renderLoop.getYFromPercent(0.2f * 5.58333f), renderLoop.getYFromPercent(0.2f));
 
         _isLoaded = true;
     }
