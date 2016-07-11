@@ -65,7 +65,7 @@ public class Hero extends Entity
      */
     public void restoreHealth()
     {
-        _health = Math.min(1.0f, _health + Constants.HeartHealthRestore);
+        _health = Math.min(Constants.PlayerHealth, _health + Constants.HeartHealthRestore);
 
         //TODO: do fancy effect with red particles falling
     }

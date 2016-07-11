@@ -15,7 +15,7 @@ public class Constants
     //Diameters are percentages of screen width
 
     //Entities
-    public static float EnemyDiameter = 0.053f;
+    public static float EnemyDiameter = 0.058f;
     public static float HeroDiameter = 0.056f;
     public static float BulletDiameter = 0.026f;
     public static float HeartDiameter = 0.035f;
@@ -37,7 +37,7 @@ public class Constants
     //Times
     public static int PlayerFrozenOnHitMs = 2000;
     public static int PlayerBlinksOnHitMs = 3000;
-    public static int ChainBulletLifeTimeMs = 200;
+    public static int ChainBulletLifeTimeMs = 350;
 
     //region Misc
 
@@ -46,9 +46,9 @@ public class Constants
     public static float EnemySpeedIncrement = 0.001f;           //This is added to the starting enemy speed each second
     public static long MaxComboSize = 20;
     public static float EnemyDamage = 20.0f;
-    public static float PlayerHealth = 120.0f;
+    public static float PlayerHealth = 140.0f;
     public static float HeartHealthRestore = 40.0f;
-    public static long MinShotIntervalMs = 200;
+    public static long MinShotIntervalMs = 250;
     public static int StartingChainCountToSpawnHeart = 4;
 
     //endregion
