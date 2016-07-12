@@ -2,6 +2,7 @@ package gorlorn.Screens;
 
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Paint;
 import android.text.TextPaint;
 import android.view.Gravity;
 import android.view.View;
@@ -24,7 +25,7 @@ public class AboutScreen extends ScreenBase
     private long _timeLeftMs;
     private static int GridAnimationDurationMs = 300;
     private TextPaint _versionPaint;
-    private TextView _messageView;
+    private Paint _messagePaint;
     private boolean _adShownYet;
 
 
@@ -40,18 +41,8 @@ public class AboutScreen extends ScreenBase
         _gorlorn = gorlorn;
         _versionPaint = gorlorn.createTextPaint(0.04f);
 
-        _messageView = new TextView(gorlorn.getActivity().getApplicationContext());
-        _messageView.setTextColor(Color.WHITE);
-        LinearLayout.LayoutParams llp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-        _messageView.setLayoutParams(llp);
-        _messageView.setTextSize(gorlorn.getYFromPercent(0.02f));
-        _messageView.setGravity(Gravity.CENTER_HORIZONTAL);
-
-        String message = "This simple game was created for fun and to learn Android development. To check out some REAL (and free!) games, go to: www.smileysmazehunt.com";
-        _messageView.setText(message);
-        _messageView.setDrawingCacheEnabled(true);
-        _messageView.measure(View.MeasureSpec.makeMeasureSpec(gorlorn.getXFromPercent(0.7f), View.MeasureSpec.EXACTLY), View.MeasureSpec.makeMeasureSpec(gorlorn.ScreenHeight, View.MeasureSpec.EXACTLY));
-        _messageView.layout(0, 0, _messageView.getMeasuredWidth(), _messageView.getMeasuredHeight());
+        _messagePaint = gorlorn.createTextPaint(0.05f);
+        _messagePaint.setTextAlign(Paint.Align.CENTER);
     }
 
     @Override
@@ -94,7 +85,10 @@ public class AboutScreen extends ScreenBase
         {
             float versionY = _gorlorn.getYFromPercent(0.19f) + Bitmaps.Title.getHeight();
             canvas.drawText("Version " + BuildConfig.VERSION_NAME, _gorlorn.getXFromPercent(0.15f), versionY, _versionPaint);
-            canvas.drawBitmap(_messageView.getDrawingCache(), _gorlorn.getXFromPercent(0.15f), versionY + _gorlorn.getYFromPercent(0.1f), null);
+
+            canvas.drawText("This simple game was created for fun and to learn Android", _gorlorn.getXFromPercent(0.5f), _gorlorn.getYFromPercent(0.5f), _messagePaint);
+            canvas.drawText("development. To check out some REAL (and free!) games, go to:", _gorlorn.getXFromPercent(0.5f), _gorlorn.getYFromPercent(0.57f), _messagePaint);
+            canvas.drawText("              www.smileysmazehunt.com", _gorlorn.getXFromPercent(0.5f), _gorlorn.getYFromPercent(0.64f), _messagePaint);
         }
     }
 }
