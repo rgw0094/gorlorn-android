@@ -33,18 +33,71 @@ public class BulletManager
     {
         _gorlorn = gorlorn;
         _speed = ((_gorlorn.ScreenWidth + _gorlorn.ScreenHeight) / 2.0f) * Constants.BulletSpeed;
-
     }
 
-    public void FireBullet(float originX, float originY, double angle)
+    /**
+     * Fires a bullet starting at the given origin point and travelling at the given angle.
+     *
+     * @param originX
+     * @param originY
+     * @param angle
+     */
+    public void fireBullet(float originX, float originY, double angle)
     {
-        _bullets.add(new Bullet(_gorlorn, Bitmaps.Bullet, originX, originY, _speed, angle, 1, 0));
+        fireBullet(originX, originY, angle, 1, 0);
+    }
+
+    /**
+     * Fires a bullet starting at the given origin point and travelling at the given angle.
+     *
+     * @param originX
+     * @param originY
+     * @param angle
+     * @param chainCount
+     * @param lifeTimeMs
+     */
+    public void fireBullet(float originX, float originY, double angle, int chainCount, int lifeTimeMs)
+    {
+        _bullets.add(new Bullet(_gorlorn, chainCount == 1 ? Bitmaps.Bullet : Bitmaps.BulletCombo, originX, originY, _speed, angle, chainCount, lifeTimeMs));
+    }
+
+    /**
+     * Fires a spray of bullets in random directions originating from the given point.
+     *
+     * @param originX
+     * @param originY
+     * @param numBullets
+     */
+    public void fireBulletSpray(float originX, float originY, int numBullets, int chainCount)
+    {
+        fireBulletSpray(originX, originY, numBullets, chainCount, 0, (float) Math.PI * 2.0f);
+    }
+
+    /**
+     * Fires a spray of bullets in random directions originating from the given point.
+     *
+     * @param originX
+     * @param originY
+     * @param numBullets
+     * @param chainCount
+     * @param minAngle
+     * @param maxAngle
+     */
+    public void fireBulletSpray(float originX, float originY, int numBullets, int chainCount, float minAngle, float maxAngle)
+    {
+        chainCount = (int) Math.min(Constants.MaxComboSize, chainCount + 1);
+
+        for (int i = 0; i < numBullets; i++)
+        {
+            double angle = minAngle + _random.nextDouble() * (maxAngle - minAngle);
+            fireBullet(originX, originY, angle, chainCount, Constants.ChainBulletLifeTimeMs);
+        }
     }
 
     public void update(float dt)
     {
         LinkedList<Bullet> deadBullets = new LinkedList<>();
-        LinkedList<Bullet> newBullets = new LinkedList<>();
+        LinkedList<Bullet> enemyKillingBullets = new LinkedList<>();
 
         for (Bullet bullet : _bullets)
         {
@@ -59,23 +112,18 @@ public class BulletManager
             {
                 _gorlorn.getHud().addPoints(bullet.X, bullet.Y, bullet.getChainCount());
                 deadBullets.add(bullet);
+                enemyKillingBullets.add(bullet);
 
                 if (bullet.getChainCount() > _chainCountToSpawnHeart)
                 {
                     _gorlorn.getHeartManager().spawnHeart((int) bullet.X, (int) bullet.Y);
                     _chainCountToSpawnHeart++;
                 }
-
-                //Fire 3 short-lived bullets in random angles when an enemy is killed
-                for (int i = 0; i < 3; i++)
-                {
-                    double angle = _random.nextDouble() * Math.PI * 2.0;
-
-                    int chainCount = (int)Math.min(Constants.MaxComboSize, bullet.getChainCount() + 1);
-                    _gorlorn.getGameStats().highestCombo = Math.max(chainCount, _gorlorn.getGameStats().highestCombo);
-
-                    newBullets.add(new Bullet(_gorlorn, Bitmaps.BulletCombo, killedEnemy.X, killedEnemy.Y, _speed, angle, chainCount, Constants.ChainBulletLifeTimeMs));
-                }
+            }
+            else if (bullet.Y - bullet.Height < 0)
+            {
+                //Kill bullets that go off the screen
+                deadBullets.add(bullet);
             }
         }
 
@@ -84,9 +132,11 @@ public class BulletManager
             _bullets.remove(deadBullet);
         }
 
-        for (Bullet newBullet : newBullets)
+        //Spawn a cluster of bullets for each enemy killed.
+        for (Bullet enemyKillingBullet : enemyKillingBullets)
         {
-            _bullets.add(newBullet);
+            fireBulletSpray(enemyKillingBullet.X, enemyKillingBullet.Y, 3, enemyKillingBullet.getChainCount());
+            _gorlorn.getGameStats().highestCombo = Math.max(enemyKillingBullet.getChainCount() + 1, _gorlorn.getGameStats().highestCombo);
         }
     }
 

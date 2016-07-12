@@ -61,7 +61,6 @@ public class Gorlorn extends RenderLoopBase
         super(activity);
 
         _activity = activity;
-        setScreen(new MenuScreen(this));
         _currentStats = new GorlornStats();
         _cumulativeStats = GorlornStats.load(activity);
         requestAd();
@@ -215,6 +214,7 @@ public class Gorlorn extends RenderLoopBase
             _background = new Background(this);
             _hud = new HUD(this);
             _isInitialized = true;
+            setScreen(new MenuScreen(this));
             return;
         }
 
@@ -281,38 +281,6 @@ public class Gorlorn extends RenderLoopBase
     }
 
     /**
-     * Shows the menu controls in the activity layout.
-     */
-    public void showMenuButtons()
-    {
-        new Handler(Looper.getMainLooper()).post(new Runnable()
-        {
-            @Override
-            public void run()
-            {
-                _activity.findViewById(R.id.buttonsView).setVisibility(View.VISIBLE);
-                //_activity.findViewById(R.id.adView).setVisibility(View.VISIBLE);
-            }
-        });
-    }
-
-    /**
-     * Hides the menu controls in the activity layout.
-     */
-    public void hideMenuButtons()
-    {
-        new Handler(Looper.getMainLooper()).post(new Runnable()
-        {
-            @Override
-            public void run()
-            {
-                _activity.findViewById(R.id.buttonsView).setVisibility(View.GONE);
-                //_activity.findViewById(R.id.adView).setVisibility(View.GONE);
-            }
-        });
-    }
-
-    /**
      * Displays an ad at the bottom of the screen.
      */
     public void showAd()
@@ -344,12 +312,6 @@ public class Gorlorn extends RenderLoopBase
      */
     public void requestAd()
     {
-        //AdRequest adRequest = new AdRequest.Builder().build(); //Real request!!
-//        AdRequest adRequest = new AdRequest.Builder()
-//                .addTestDevice(AdRequest.DEVICE_ID_EMULATOR)        // All emulators
-//                .addTestDevice("B002DA6CED0109ADA1321B29C4DEE7B1")
-//                .build();
-//        ().loadAd(adRequest);
         Thread adThread = new Thread()
         {
             @Override
@@ -367,6 +329,7 @@ public class Gorlorn extends RenderLoopBase
         final AdView adView = (AdView) _activity.findViewById(R.id.adView);
 
         // Request for ads
+        //AdRequest adRequest = new AdRequest.Builder().build(); //Real request!!
         final AdRequest adRequest = new AdRequest.Builder()
                 .addTestDevice(AdRequest.DEVICE_ID_EMULATOR)        // All emulators
                 .addTestDevice("B002DA6CED0109ADA1321B29C4DEE7B1")

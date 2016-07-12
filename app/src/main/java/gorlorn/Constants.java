@@ -28,7 +28,7 @@ public class Constants
     //endregion
 
     //Speeds
-    public static float EnemySpeed = 0.65f;             //Percent of the screen traversed per second
+    public static float EnemySpeed = 0.7f;             //Percent of the screen traversed per second
     public static float HeroSpeed = 0.9f;
     public static float HeroAcceleration = 8.0f;        //Percent of the screen width accelerated per second
     public static float BulletSpeed = 0.8f;
@@ -37,13 +37,13 @@ public class Constants
     //Times
     public static int PlayerFrozenOnHitMs = 2000;
     public static int PlayerBlinksOnHitMs = 3000;
-    public static int ChainBulletLifeTimeMs = 350;
+    public static int ChainBulletLifeTimeMs = 300;
 
     //region Misc
 
-    public static long StartingEnemySpawnIntervalMs = 450;
-    public static float EnemySpawnRateAcceleration = 0.996f;    //The enemy spawn rate is multiplied by this every second
-    public static float EnemySpeedIncrement = 0.001f;           //This is added to the starting enemy speed each second
+    public static long StartingEnemySpawnIntervalMs = 400;
+    public static float EnemySpawnRateAcceleration = 0.995f;    //The enemy spawn rate is multiplied by this every second
+    public static float EnemySpeedIncrement = 0.0008f;           //This is added to the starting enemy speed each second
     public static long MaxComboSize = 20;
     public static float EnemyDamage = 20.0f;
     public static float PlayerHealth = 140.0f;

@@ -2,7 +2,6 @@ package gorlorn.Entities;
 
 import android.graphics.Canvas;
 
-import java.text.MessageFormat;
 import java.util.Date;
 
 import gorlorn.Bitmaps;
@@ -58,6 +57,9 @@ public class Hero extends Entity
             _health = 0.0f;
             _gorlorn.die();
         }
+
+        //Fire a spray of bullets when hit
+        _gorlorn.getBulletManager().fireBulletSpray(X, Y, 6, 0, (float)Math.PI * 1.1f, (float)Math.PI* 1.9f);
     }
 
     /**
@@ -124,7 +126,7 @@ public class Hero extends Entity
             if (now - _lastShotFiredMs > Constants.MinShotIntervalMs)
             {
                 _lastShotFiredMs = now;
-                _gorlorn.getBulletManager().FireBullet(X, Y, Math.PI * 1.5);
+                _gorlorn.getBulletManager().fireBullet(X, Y, Math.PI * 1.5);
                 _gorlorn.getGameStats().shotsFired++;
             }
         }

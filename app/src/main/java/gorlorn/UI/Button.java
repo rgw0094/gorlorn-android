@@ -20,14 +20,19 @@ public class Button
     private int _y;
     private boolean _isClicked;
 
-    public Button(Gorlorn gorlorn, int id, float widthPercent, float heightPercent, int centerX, int centerY)
+    public Button(Gorlorn gorlorn, Bitmap bitmap, int centerX, int centerY)
     {
         _gorlorn = gorlorn;
-        _bitmap = _gorlorn.createBitmap(id, _gorlorn.getXFromPercent(widthPercent), _gorlorn.getYFromPercent(heightPercent));
+        _bitmap = bitmap;
 
         _x = centerX - _bitmap.getWidth() / 2;
         _y = centerY - _bitmap.getHeight() / 2;
         _hitBox = new Rect(_x, _y, _x + _bitmap.getWidth(), _y + _bitmap.getHeight());
+    }
+
+    public Button(Gorlorn gorlorn, int id, float widthPercent, float heightPercent, int centerX, int centerY)
+    {
+        this(gorlorn, gorlorn.createBitmap(id, gorlorn.getXFromPercent(widthPercent), gorlorn.getYFromPercent(heightPercent)), centerX, centerY);
     }
 
     /**

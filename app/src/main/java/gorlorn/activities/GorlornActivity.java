@@ -51,24 +51,4 @@ public class GorlornActivity extends Activity
     {
         _gorlorn.showMenu();
     }
-
-    public void startGame(View view)
-    {
-        _gorlorn.startGame();
-    }
-
-    public void quit(View view)
-    {
-        finishAffinity();
-    }
-
-    public void showStatistics(View view)
-    {
-        _gorlorn.showStatistics();
-    }
-
-    public void showAboutScreen(View view)
-    {
-        _gorlorn.showAboutScreen();
-    }
 }

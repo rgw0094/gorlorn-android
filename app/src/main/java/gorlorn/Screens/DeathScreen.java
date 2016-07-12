@@ -34,7 +34,6 @@ public class DeathScreen extends ScreenBase
     private float _backgroundOpacity = 0.0f;
     private Phase _currentPhase;
     private Paint _heroPaint = new Paint();
-    private Button _tryAgainButton;
     private Paint _highScorePaint;
     private FloatingNumbers _highScoreFloatingNumbers;
 
@@ -56,8 +55,6 @@ public class DeathScreen extends ScreenBase
         }
 
         _heroPaint.setARGB(255, 255, 255, 255);
-        _tryAgainButton = new Button(gorlorn, R.drawable.tryagain, 0.35f, 0.35f / 4.25f, gorlorn.getXFromPercent(0.78f), gorlorn.getYFromPercent(0.9f));
-        //TODO: statistics button
     }
 
     @Override
@@ -93,12 +90,6 @@ public class DeathScreen extends ScreenBase
         }
         else if (_currentPhase == Phase.Done)
         {
-//            _tryAgainButton.update();
-//            if (_tryAgainButton.isClicked())
-//            {
-//                _gorlorn.startGame();
-//            }
-
             if (_gorlorn.getHud().isClicked())
             {
                 _gorlorn.startGame();
