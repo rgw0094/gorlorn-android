@@ -7,7 +7,6 @@ import java.util.Iterator;
 import java.util.LinkedList;
 
 import gorlorn.Entities.Heart;
-import gorlorn.activities.GorlornActivity;
 import gorlorn.activities.R;
 
 /**
@@ -17,11 +16,15 @@ import gorlorn.activities.R;
  */
 public class HeartManager
 {
-    private GorlornActivity _gorlorn;
+    private Gorlorn _gorlorn;
     private LinkedList<Heart> _hearts = new LinkedList<>();
     private Bitmap _heartSprite;
 
-    public HeartManager(GorlornActivity gorlorn)
+    /**
+     * Constructs a new _heartManager.
+     * @param gorlorn
+     */
+    public HeartManager(Gorlorn gorlorn)
     {
         _gorlorn = gorlorn;
         _heartSprite = gorlorn.createBitmapByWidthPercent(R.drawable.heart, Constants.HeartDiameter);

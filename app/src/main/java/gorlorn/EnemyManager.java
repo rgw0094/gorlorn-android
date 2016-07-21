@@ -3,13 +3,13 @@ package gorlorn;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 
+import java.text.DecimalFormat;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.Random;
 
+import gorlorn.Entities.Bullet;
 import gorlorn.Entities.Enemy;
-import gorlorn.Entities.Entity;
-import gorlorn.activities.GorlornActivity;
 import gorlorn.activities.R;
 
 /**
@@ -17,17 +17,20 @@ import gorlorn.activities.R;
  */
 public class EnemyManager
 {
-    private GorlornActivity _gorlornActivity;
+    private Gorlorn _gorlorn;
     private LinkedList<Enemy> _enemies;
     private Bitmap _enemySprite;
     private long _timeLastEnemySpawnedMs;
-    private long _enemySpawnIntervalMs = Constants.StartingEnemySpawnIntervalMs;
+    private float _enemySpawnIntervalMs = Constants.StartingEnemySpawnIntervalMs;
+    private float _enemySpeed;
+    private long _timeLastRateUpdateMs;
 
-    public EnemyManager(GorlornActivity gorlornActivity)
+    public EnemyManager(Gorlorn gorlorn)
     {
-        _gorlornActivity = gorlornActivity;
+        _gorlorn = gorlorn;
+        _enemySpeed = Constants.EnemySpeed;
         _enemies = new LinkedList<>();
-        _enemySprite = gorlornActivity.createBitmapByWidthPercent(R.drawable.enemy, Constants.EnemyDiameter);
+        _enemySprite = gorlorn.createBitmapByWidthPercent(R.drawable.enemy, Constants.EnemyDiameter);
     }
 
     /**
@@ -37,12 +40,15 @@ public class EnemyManager
      * @param bullet
      * @return
      */
-    public Enemy TryKillEnemy(Entity bullet)
+    public Enemy TryKillEnemy(Bullet bullet)
     {
         for (Enemy enemy : _enemies)
         {
-            if (enemy.testHit(bullet))
+            //Don't let a bullet kill an enemy if its a chain reaction that spawned before the enemy,
+            //in order to prevent an endless chain reaction once there's a ton of enemies
+            if (!(bullet.isChainBullet() && bullet.isOlderThan(enemy)) && enemy.testHit(bullet))
             {
+                _gorlorn.getGameStats().enemiesVanquished++;
                 _enemies.remove(enemy);
                 return enemy;
             }
@@ -51,9 +57,9 @@ public class EnemyManager
     }
 
     /**
-     * Draws the BulletManager
+     * Draws the _bulletManager
      *
-     * @param canvas The canvas upon which to draw the BulletManager
+     * @param canvas The canvas upon which to draw the _bulletManager
      */
     public void draw(Canvas canvas)
     {
@@ -61,10 +67,16 @@ public class EnemyManager
         {
             enemy.draw(canvas);
         }
+
+        if (Constants.IsDebugMode)
+        {
+            canvas.drawText("EDelay: " + new DecimalFormat("#.####").format(_enemySpawnIntervalMs), _gorlorn.getXFromPercent(0.001f), _gorlorn.getYFromPercent(0.6f), Gorlorn.DebugTextPaint);
+            canvas.drawText("ESpeed: " + new DecimalFormat("#.####").format(_enemySpeed), _gorlorn.getXFromPercent(0.001f), _gorlorn.getYFromPercent(0.65f), Gorlorn.DebugTextPaint);
+        }
     }
 
     /**
-     * Updates the BulletManager.
+     * Updates the _bulletManager.
      *
      * @param dt The time since the last update
      */
@@ -90,6 +102,13 @@ public class EnemyManager
         {
             _enemies.remove(deadEnemy);
         }
+
+        if (now - _timeLastRateUpdateMs > 1000)
+        {
+            _enemySpawnIntervalMs *= Constants.EnemySpawnRateAcceleration;
+            _enemySpeed += Constants.EnemySpeedIncrement;
+            _timeLastRateUpdateMs = now;
+        }
     }
 
     /**
@@ -99,17 +118,29 @@ public class EnemyManager
     {
         Random random = new Random();
 
-        double angle = Math.PI * 0.25 + random.nextDouble() * Math.PI * 0.5;
-        float speed = ((_gorlornActivity.ScreenWidth + _gorlornActivity.ScreenHeight) / 2.0f) * Constants.EnemySpeed;
-        float minX = _gorlornActivity.GameArea.left + _gorlornActivity.GameArea.width() * 0.2f;
+        double angle = GetEnemyAngle(random);
+        float speed = ((_gorlorn.ScreenWidth + _gorlorn.ScreenHeight) / 2.0f) * _enemySpeed;
+        float minX = _gorlorn.ScreenWidth * 0.2f;
 
-        Enemy newEnemy = new Enemy(_gorlornActivity, _enemySprite);
-        newEnemy.X = minX + random.nextFloat() * _gorlornActivity.GameArea.width() * 0.6f;
-        newEnemy.Y = _gorlornActivity.getYFromPercent(0.025f);
+        Enemy newEnemy = new Enemy(_gorlorn, _enemySprite);
+        newEnemy.X = minX + random.nextFloat() * _gorlorn.ScreenWidth * 0.6f;
+        newEnemy.Y = _gorlorn.getYFromPercent(0.025f);
         newEnemy.Vx = speed * (float) Math.cos(angle);
         newEnemy.Vy = speed * (float) Math.sin(angle);
 
         _enemies.add(newEnemy);
-        _enemySpawnIntervalMs *= Constants.EnemySpawnRateAcceleration;
+    }
+
+    private double GetEnemyAngle(Random random)
+    {
+        boolean left = random.nextDouble() < 0.5;
+        if (left)
+        {
+            return Math.PI * .2 + random.nextDouble() * Math.PI * 0.2;
+        }
+        else
+        {
+            return Math.PI * .6 + random.nextDouble() * Math.PI * 0.2;
+        }
     }
 }

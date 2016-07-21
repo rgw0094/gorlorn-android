@@ -2,43 +2,77 @@ package gorlorn.UI;
 
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.Paint;
+import android.graphics.Rect;
 
-import gorlorn.activities.GorlornActivity;
+import gorlorn.Bitmaps;
+import gorlorn.Framework.RenderLoopBase;
 import gorlorn.activities.R;
 
 /**
- * The beautiful parallax background behind the gorlorn game area
+ * Renders the beautiful Gorlorn background.
  * <p/>
  * Created by Rob on 1/19/2016.
  */
 public class Background
 {
-    private Bitmap _cloudLayerSprite;
-    private Bitmap _mountainLayerSprite;
-    private float _cloudXOffset;
-    private float _mountainXOffset;
-    private float _cloudSpeed;
-    private float _mountainSpeed;
-    private float _mountainYOffset;
+    private static int NumPoints = 10;
+
+    //Hacks!
+    private static float _backgroundXOffset;
+    private static float _backgroundYOffset;
+    private static float _horizontalLinesOffset;
+
+    private RenderLoopBase _renderLoop;
+    private Paint _linePaint;
+    private float[] _horizontalLineStarts = new float[NumPoints];
+    private float _time;
+    private int _gridAnimationDurationMs;
+    private boolean _isRetractingGrid;
+    private boolean _isExpandingGrid;
+    private float _gridTopY;
+    private float _targetGridTopY;
 
     /**
      * Constructs a new Background.
      *
-     * @param gorlornActivity
+     * @param renderLoop The render loop used to draw the background.
      */
-    public Background(GorlornActivity gorlornActivity)
+    public Background(RenderLoopBase renderLoop)
     {
-        int width = (int) ((float) gorlornActivity.GameArea.height() * (1024.0f / 768.0f));
-        int height = gorlornActivity.GameArea.height();
+        _renderLoop = renderLoop;
+        _linePaint = new Paint();
+        _linePaint.setARGB(255, 247, 33, 155);
+        _linePaint.setStrokeWidth(_renderLoop.getYFromPercent(0.005f));
 
-        _cloudLayerSprite = gorlornActivity.createBitmap(R.drawable.clouds, width, height);
-        _mountainLayerSprite = gorlornActivity.createBitmap(R.drawable.mountains, width, height);
+        _gridTopY = _targetGridTopY = _renderLoop.getYFromPercent(0.45f);
 
-        _cloudSpeed = (float) gorlornActivity.GameArea.width() * 0.1f;
-        _mountainSpeed = (float) gorlornActivity.GameArea.width() * 0.15f;
+        for (int i = 0; i < NumPoints; i++)
+        {
+            _horizontalLineStarts[i] = _renderLoop.getXFromPercent((1.0f / (float) NumPoints) * (float) i);
+        }
+    }
 
-        _cloudXOffset = _mountainXOffset = gorlornActivity.GameArea.left;
-        _mountainYOffset = gorlornActivity.getYFromPercent(0.2f);
+    /**
+     * Retracts the grid portion of the background (lowers it until its off the screen)
+     *
+     * @param durationMs The duration of the retract animation in milliseconds
+     */
+    public void retractGrid(int durationMs)
+    {
+        _gridAnimationDurationMs = durationMs;
+        _isRetractingGrid = true;
+    }
+
+    /**
+     * Extends the grid portion of the background (raises it off the bottom of the screen until it is back to normal).
+     *
+     * @param durationMs The duration of the retract animation in milliseconds
+     */
+    public void extendGrid(int durationMs)
+    {
+        _gridAnimationDurationMs = durationMs;
+        _isExpandingGrid = true;
     }
 
     /**
@@ -48,13 +82,29 @@ public class Background
      */
     public void update(float dt)
     {
-        _cloudXOffset += (_cloudSpeed * dt);
-        if (_cloudXOffset >= _cloudLayerSprite.getWidth())
-            _cloudXOffset = 0.0f;
+        float width = _renderLoop.ScreenWidth;
+        float speed = width * 0.1f;
+        _time += dt;
 
-        _mountainXOffset += (_mountainSpeed * dt);
-        if (_mountainXOffset >= _mountainLayerSprite.getWidth())
-            _mountainXOffset = 0.0f;
+        _backgroundXOffset = (float) _renderLoop.getXFromPercent(0.05f) * (float) Math.cos(_time / 2.0f) - (float) _renderLoop.getXFromPercent(0.05f);
+        _backgroundYOffset = (float) _renderLoop.getYFromPercent(0.05f) * (float) Math.sin(_time / 2.0f) - (float) _renderLoop.getYFromPercent(0.05f);
+        _horizontalLinesOffset += (speed * dt);
+
+        if (_isRetractingGrid)
+        {
+            _gridTopY += _targetGridTopY / ((float)_gridAnimationDurationMs / 1000.0f) * dt;
+            if (_gridTopY > _renderLoop.ScreenHeight)
+                _isRetractingGrid = false;
+        }
+        else if (_isExpandingGrid)
+        {
+            _gridTopY -= _targetGridTopY / ((float)_gridAnimationDurationMs / 1000.0f) * dt;
+            if (_gridTopY <= _targetGridTopY)
+            {
+                _gridTopY = _targetGridTopY;
+                _isExpandingGrid = false;
+            }
+        }
     }
 
     /**
@@ -64,14 +114,28 @@ public class Background
      */
     public void draw(Canvas canvas)
     {
-        //TODO: clip offscreen stuff for better performance, make sprites smaller
+        canvas.drawBitmap(Bitmaps.Background, _backgroundXOffset, _backgroundYOffset, null);
 
-        canvas.drawBitmap(_cloudLayerSprite, _cloudXOffset, 0, null);
-        canvas.drawBitmap(_cloudLayerSprite, _cloudXOffset - _cloudLayerSprite.getWidth(), 0, null);
-        canvas.drawBitmap(_cloudLayerSprite, _cloudXOffset + _cloudLayerSprite.getWidth(), 0, null);
+        //Draw the vertical lines
+        float centerX = _renderLoop.ScreenWidth * 0.5f;
+        float bottomY = _renderLoop.ScreenHeight + (_gridTopY - _targetGridTopY);
 
-        canvas.drawBitmap(_mountainLayerSprite, _mountainXOffset, _mountainYOffset, null);
-        canvas.drawBitmap(_mountainLayerSprite, _mountainXOffset - _mountainLayerSprite.getWidth(), _mountainYOffset, null);
-        canvas.drawBitmap(_mountainLayerSprite, _mountainXOffset + _mountainLayerSprite.getWidth(), _mountainYOffset, null);
+        for (int i = 0; i < NumPoints; i++)
+        {
+            float lineStart = (_horizontalLineStarts[i] + _horizontalLinesOffset) % _renderLoop.ScreenWidth;
+            float distFromCenter = centerX - lineStart;
+            float bottomX = centerX - (distFromCenter * 3.2f);
+            canvas.drawLine(lineStart, _gridTopY, bottomX, bottomY, _linePaint);
+        }
+
+        //Draw the horizontal lines
+        float y = _gridTopY;
+        float yInterval = _renderLoop.getYFromPercent(0.05f);
+        while (y < _renderLoop.ScreenHeight)
+        {
+            canvas.drawLine(0, y, _renderLoop.ScreenWidth, y, _linePaint);
+            y += yInterval;
+            yInterval *= 1.3f;
+        }
     }
 }

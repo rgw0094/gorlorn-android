@@ -4,40 +4,100 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 
 import java.util.LinkedList;
+import java.util.Random;
 
 import gorlorn.Entities.Bullet;
 import gorlorn.Entities.Enemy;
 import gorlorn.Entities.Entity;
-import gorlorn.activities.GorlornActivity;
 import gorlorn.activities.R;
 
 /**
+ * Spawns and controls bullets.
+ * <p/>
  * Created by Rob on 1/14/2016.
  */
 public class BulletManager
 {
-    private GorlornActivity _gorlornActivity;
-    private Bitmap _projectileSprite;
+    private Gorlorn _gorlorn;
+    private java.util.Random _random = new Random();
     private LinkedList<Bullet> _bullets = new LinkedList<>();
     private float _speed;
     private int _chainCountToSpawnHeart = Constants.StartingChainCountToSpawnHeart;
 
-    public BulletManager(GorlornActivity gorlornActivity)
+    /**
+     * Constructs a new _bulletManager.
+     *
+     * @param gorlorn
+     */
+    public BulletManager(Gorlorn gorlorn)
     {
-        _gorlornActivity = gorlornActivity;
-        _speed = ((_gorlornActivity.ScreenWidth + _gorlornActivity.ScreenHeight) / 2.0f) * Constants.BulletSpeed;
-        _projectileSprite = gorlornActivity.createBitmapByWidthPercent(R.drawable.bullet, Constants.BulletDiameter);
+        _gorlorn = gorlorn;
+        _speed = ((_gorlorn.ScreenWidth + _gorlorn.ScreenHeight) / 2.0f) * Constants.BulletSpeed;
     }
 
-    public void FireBullet(float originX, float originY, double angle)
+    /**
+     * Fires a bullet starting at the given origin point and travelling at the given angle.
+     *
+     * @param originX
+     * @param originY
+     * @param angle
+     */
+    public void fireBullet(float originX, float originY, double angle)
     {
-        _bullets.add(new Bullet(_gorlornActivity, _projectileSprite, originX, originY, _speed, angle, 1, 0));
+        fireBullet(originX, originY, angle, 1, 0);
+    }
+
+    /**
+     * Fires a bullet starting at the given origin point and travelling at the given angle.
+     *
+     * @param originX
+     * @param originY
+     * @param angle
+     * @param chainCount
+     * @param lifeTimeMs
+     */
+    public void fireBullet(float originX, float originY, double angle, int chainCount, int lifeTimeMs)
+    {
+        _bullets.add(new Bullet(_gorlorn, chainCount == 1 ? Bitmaps.Bullet : Bitmaps.BulletCombo, originX, originY, _speed, angle, chainCount, lifeTimeMs));
+    }
+
+    /**
+     * Fires a spray of bullets in random directions originating from the given point.
+     *
+     * @param originX
+     * @param originY
+     * @param numBullets
+     */
+    public void fireBulletSpray(float originX, float originY, int numBullets, int chainCount)
+    {
+        fireBulletSpray(originX, originY, numBullets, chainCount, 0, (float) Math.PI * 2.0f);
+    }
+
+    /**
+     * Fires a spray of bullets in random directions originating from the given point.
+     *
+     * @param originX
+     * @param originY
+     * @param numBullets
+     * @param chainCount
+     * @param minAngle
+     * @param maxAngle
+     */
+    public void fireBulletSpray(float originX, float originY, int numBullets, int chainCount, float minAngle, float maxAngle)
+    {
+        chainCount = (int) Math.min(Constants.MaxComboSize, chainCount + 1);
+
+        for (int i = 0; i < numBullets; i++)
+        {
+            double angle = minAngle + _random.nextDouble() * (maxAngle - minAngle);
+            fireBullet(originX, originY, angle, chainCount, Constants.ChainBulletLifeTimeMs);
+        }
     }
 
     public void update(float dt)
     {
         LinkedList<Bullet> deadBullets = new LinkedList<>();
-        LinkedList<Bullet> newBullets = new LinkedList<>();
+        LinkedList<Bullet> enemyKillingBullets = new LinkedList<>();
 
         for (Bullet bullet : _bullets)
         {
@@ -47,24 +107,23 @@ public class BulletManager
             }
 
             //Check if the bullet hit an enemy
-            Enemy killedEnemy = _gorlornActivity.EnemyManager.TryKillEnemy(bullet);
+            Enemy killedEnemy = _gorlorn.getEnemyManager().TryKillEnemy(bullet);
             if (killedEnemy != null)
             {
-                _gorlornActivity.Hud.addPoints(bullet.X, bullet.Y, bullet.ChainCount);
+                _gorlorn.getHud().addPoints(bullet.X, bullet.Y, bullet.getChainCount());
                 deadBullets.add(bullet);
+                enemyKillingBullets.add(bullet);
 
-                if (bullet.ChainCount > _chainCountToSpawnHeart)
+                if (bullet.getChainCount() > _chainCountToSpawnHeart)
                 {
-                    _gorlornActivity.HeartManager.spawnHeart((int) bullet.X, (int) bullet.Y);
+                    _gorlorn.getHeartManager().spawnHeart((int) bullet.X, (int) bullet.Y);
                     _chainCountToSpawnHeart++;
                 }
-
-                //Fire 3 short-lived bullets in random angles when an enemy is killed
-                for (int i = 0; i < 3; i++)
-                {
-                    double angle = _gorlornActivity.Random.nextDouble() * Math.PI * 2.0;
-                    newBullets.add(new Bullet(_gorlornActivity, _projectileSprite, killedEnemy.X, killedEnemy.Y, _speed, angle, bullet.ChainCount + 1, 250));
-                }
+            }
+            else if (bullet.Y - bullet.Height < 0)
+            {
+                //Kill bullets that go off the screen
+                deadBullets.add(bullet);
             }
         }
 
@@ -73,9 +132,11 @@ public class BulletManager
             _bullets.remove(deadBullet);
         }
 
-        for (Bullet newBullet : newBullets)
+        //Spawn a cluster of bullets for each enemy killed.
+        for (Bullet enemyKillingBullet : enemyKillingBullets)
         {
-            _bullets.add(newBullet);
+            fireBulletSpray(enemyKillingBullet.X, enemyKillingBullet.Y, 3, enemyKillingBullet.getChainCount());
+            _gorlorn.getGameStats().highestCombo = Math.max(enemyKillingBullet.getChainCount() + 1, _gorlorn.getGameStats().highestCombo);
         }
     }
 

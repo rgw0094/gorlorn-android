@@ -16,7 +16,7 @@ public class HealthBar
     private int _thickness;
     private int _length;
     private static Paint _borderPaint;
-    private static Paint _fillPaint;
+    private Paint _fillPaint;
     private static Paint _emptyPaint;
 
     /**
@@ -28,11 +28,13 @@ public class HealthBar
      * @param thickness   Thickness of the bar (width if vertical, height if horizontal)
      * @param length      Length of the bar (width if horizontal, length if vertical)
      */
-    public HealthBar(Orientation orientation, int x, int y, int thickness, int length)
+    public HealthBar(Orientation orientation, int x, int y, int thickness, int length, Paint paint)
     {
         _orientation = orientation;
         _thickness = thickness;
         _length = length;
+        _fillPaint = paint;
+        _fillPaint.setAntiAlias(true);
 
         if (_orientation == Orientation.Horizontal)
         {
@@ -48,10 +50,6 @@ public class HealthBar
             _borderPaint = new Paint();
             _borderPaint.setAntiAlias(true);
             _borderPaint.setARGB(255, 55, 55, 55);
-
-            _fillPaint = new Paint();
-            _fillPaint.setAntiAlias(true);
-            _fillPaint.setARGB(255, 200, 0, 0);
 
             _emptyPaint = new Paint();
             _emptyPaint.setAntiAlias(true);

@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "127260376066",
+    "firebase_url": "https://project-1446619519485283555.firebaseio.com",
+    "project_id": "project-1446619519485283555",
+    "storage_bucket": "project-1446619519485283555.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:127260376066:android:eab86bbedaddd185",
+        "android_client_info": {
+          "package_name": "com.rob.gorlorn"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "127260376066-ltev8m2v1icb376johdup0cloq6014m6.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAey5IQrQEF4SmU5znfxJiWyc6aHwNVnH8"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

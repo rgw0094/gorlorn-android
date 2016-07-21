@@ -1,41 +1,58 @@
 package gorlorn.Entities;
 
 import android.graphics.Bitmap;
+import android.graphics.Rect;
 
 import java.util.Date;
 
-import gorlorn.activities.GorlornActivity;
+import gorlorn.Gorlorn;
 
 /**
  * Created by Rob on 1/14/2016.
  */
 public class Bullet extends Entity
 {
-    private GorlornActivity _gorlornActivity;
+    private Gorlorn _gorlorn;
     private long _lifeTimeMs;
     private long _createdTimeMs;
-
-    public int ChainCount;
+    private int _chainCount;
 
     /**
      * Constructs a bullet that will dissapear after the specified number of milliseconds.
-     *
-     * @param sprite
-     * @param lifetimeMs
      */
-    public Bullet(GorlornActivity gorlornActivity, Bitmap sprite, float x, float y, float speed, double angle, int chainCount, long lifetimeMs)
+    public Bullet(Gorlorn gorlorn, Bitmap sprite, float x, float y, float speed, double angle, int chainCount, long lifetimeMs)
     {
         super(sprite);
 
-        _gorlornActivity = gorlornActivity;
+        _gorlorn = gorlorn;
         _lifeTimeMs = lifetimeMs;
-        ChainCount = chainCount;
+        _chainCount = chainCount;
         _createdTimeMs = new Date().getTime();
 
         X = x;
         Y = y;
         Vx = speed * (float) Math.cos(angle);
         Vy = speed * (float) Math.sin(angle);
+    }
+
+    /**
+     * Returns whether or not this bullet was created as part of a chain reaction, as opposed to being fired
+     * by the player.
+     *
+     * @return
+     */
+    public boolean isChainBullet()
+    {
+        return _chainCount > 1;
+    }
+
+    /**
+     * Gets the "chain count" for this bullet.
+     * @return
+     */
+    public int getChainCount()
+    {
+        return _chainCount;
     }
 
     @Override
@@ -54,9 +71,7 @@ public class Bullet extends Entity
         super.update(dt);
 
         //Kill the bullet if its left the game area
-        if (!_gorlornActivity.GameArea.contains(_hitBox))
-            return true;
-
-        return !_gorlornActivity.GameArea.contains(_hitBox);
+        Rect gameArea = new Rect(0, 0, _gorlorn.ScreenWidth, _gorlorn.ScreenHeight);
+        return !gameArea.contains(_hitBox);
     }
 }

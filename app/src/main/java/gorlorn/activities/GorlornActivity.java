@@ -1,65 +1,24 @@
 package gorlorn.activities;
 
+import android.app.Activity;
 import android.content.pm.ActivityInfo;
-import android.content.res.Resources;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Canvas;
-import android.graphics.Point;
-import android.graphics.Rect;
 import android.os.Bundle;
-import android.view.Display;
-import android.view.MotionEvent;
+import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.RelativeLayout;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.util.Random;
+import com.google.android.gms.ads.MobileAds;
 
-import gorlorn.Entities.Hero;
-import gorlorn.BulletManager;
-import gorlorn.EnemyManager;
-import gorlorn.Framework.GameLoopActivity;
 import gorlorn.Framework.GameLoopView;
-import gorlorn.HeartManager;
-import gorlorn.UI.Background;
-import gorlorn.UI.HUD;
+import gorlorn.Gorlorn;
 
 /**
- * Activity for the main game.
- * <p/>
- * Created by Rob on 1/13/2016.
+ * Activity for the menu that dislpays when the game first starts.
  */
-public class GorlornActivity extends GameLoopActivity
+public class GorlornActivity extends Activity
 {
-    //region Private Variables
-
-    private boolean _isInitialized;
-    private Background _background;
-
-    //endregion
-
-    //region Getter/Setters
-
-    public Random Random = new Random();
-    public Hero Hero;
-    public HUD Hud;
-    public EnemyManager EnemyManager;
-    public BulletManager BulletManager;
-    public HeartManager HeartManager;
-    public int ScreenWidth;
-    public int ScreenHeight;
-    public boolean IsDebugMode = true;
-
-    /**
-     * Bounds of the game area where the hero, enemies, bullets, etc. can move.
-     */
-    public Rect GameArea;
-
-    //endregion
-
-    //region GameLoopActivity Overrides
+    private Gorlorn _gorlorn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -74,145 +33,22 @@ public class GorlornActivity extends GameLoopActivity
 
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
 
-        GameLoopView view = new GameLoopView(this);
-        setContentView(view);
+        setContentView(R.layout.activity_menu);
 
-        Display display = getWindowManager().getDefaultDisplay();
-        Point size = new Point();
-        display.getSize(size);
-        ScreenWidth = size.x;
-        ScreenHeight = size.y;
+        MobileAds.initialize(getApplicationContext(), "ca-app-pub-8965087743383168~1842466939");
+
+        _gorlorn = new Gorlorn(this);
+
+        RelativeLayout root = (RelativeLayout) findViewById(R.id.menu_layout);
+        root.addView(new GameLoopView(_gorlorn), 0,
+                new WindowManager.LayoutParams(
+                        RelativeLayout.LayoutParams.MATCH_PARENT,
+                        RelativeLayout.LayoutParams.MATCH_PARENT));
     }
 
     @Override
-    public void update(float dt)
+    public void onBackPressed()
     {
-        if (!_isInitialized)
-        {
-            Initialize();
-            _isInitialized = true;
-        }
-
-        _background.update(dt);
-        EnemyManager.update(dt);
-        BulletManager.update(dt);
-        Hero.update(dt);
-        Hud.update(dt);
-        HeartManager.update(dt);
+        _gorlorn.showMenu();
     }
-
-    @Override
-    public void draw(Canvas canvas)
-    {
-        if (!_isInitialized)
-        {
-            canvas.drawARGB(255, 22, 22, 22);
-            return;
-        }
-
-        _background.draw(canvas);
-        BulletManager.Draw(canvas);
-        EnemyManager.draw(canvas);
-        Hud.draw(canvas);
-        Hero.draw(canvas);
-        HeartManager.draw(canvas);
-    }
-
-    @Override
-    public void handleException(Exception e)
-    {
-        StringWriter sw = new StringWriter();
-        PrintWriter pw = new PrintWriter(sw);
-        e.printStackTrace(pw);
-        String stackTrace = sw.toString(); // stack trace as a strings
-    }
-
-    @Override
-    public void handleInputEvent(MotionEvent me)
-    {
-        Hud.handleTouchEvent(me);
-    }
-
-    //endregion
-
-    //region Public Methods
-
-    /**
-     * Creates a bitmap sized as a percentage of the screen.
-     *
-     * @param id
-     * @param screenWidthPercent
-     * @return
-     */
-    public Bitmap createBitmapByWidthPercent(int id, float screenWidthPercent)
-    {
-        Resources resources = getApplicationContext().getResources();
-        int diameter = getXFromPercent(screenWidthPercent);
-        return Bitmap.createScaledBitmap(BitmapFactory.decodeResource(resources, id), diameter, diameter, true);
-    }
-
-    /**
-     * Creates a bitmap sized by absolute pixel count.
-     *
-     * @param id
-     * @param width
-     * @param height
-     * @return
-     */
-    public Bitmap createBitmap(int id, int width, int height)
-    {
-        Resources resources = getApplicationContext().getResources();
-        return Bitmap.createScaledBitmap(BitmapFactory.decodeResource(resources, id), width, height, true);
-    }
-
-    /**
-     * Gets the x pixel coordinate that is the given percent across the screen.
-     *
-     * @param percent
-     * @return
-     */
-    public int getXFromPercent(float percent)
-    {
-        return (int) ((float) ScreenWidth * percent);
-    }
-
-    /**
-     * Gets the y pixel coordinate that is the given percent across the screen.
-     *
-     * @param percent
-     * @return
-     */
-    public int getYFromPercent(float percent)
-    {
-        return (int) ((float) ScreenHeight * percent);
-    }
-
-    /**
-     * Returns a speed based on a percentage of the screen size.
-     *
-     * @param screenSizePercentage
-     * @return
-     */
-    public float getSpeed(float screenSizePercentage)
-    {
-        return ((float) GameArea.width() + (float) GameArea.height()) / 2.0f * screenSizePercentage;
-    }
-
-    //endregion
-
-    //region Private Methods
-
-    private void Initialize()
-    {
-        GameArea = new Rect(0, 0, ScreenWidth, ScreenHeight);
-
-        _background = new Background(this);
-        Hero = new Hero(this);
-        Hud = new HUD(this);
-        EnemyManager = new EnemyManager(this);
-        BulletManager = new BulletManager(this);
-        HeartManager = new HeartManager(this);
-    }
-
-    //endregion
 }

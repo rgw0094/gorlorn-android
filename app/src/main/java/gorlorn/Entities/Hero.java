@@ -1,10 +1,12 @@
 package gorlorn.Entities;
 
+import android.graphics.Canvas;
+
 import java.util.Date;
 
+import gorlorn.Bitmaps;
 import gorlorn.Constants;
-import gorlorn.activities.GorlornActivity;
-import gorlorn.activities.R;
+import gorlorn.Gorlorn;
 
 /**
  * Represents the hero that must slay the evil monsters
@@ -12,37 +14,52 @@ import gorlorn.activities.R;
  */
 public class Hero extends Entity
 {
-    private GorlornActivity _gorlornActivity;
+    private Gorlorn _gorlorn;
     private float _speed;
+    private float _acceleration;
     private long _lastShotFiredMs;
-    private float _healthPercent = 1.0f;
+    private float _health;
+    private HeroDirection _direction = HeroDirection.None;
+
 
     /**
-     * Constructs a new Hero.
+     * Constructs a new _hero.
      *
-     * @param gorlornActivity
+     * @param gorlorn
      */
-    public Hero(GorlornActivity gorlornActivity)
+    public Hero(Gorlorn gorlorn)
     {
-        super(gorlornActivity.createBitmapByWidthPercent(R.drawable.hero, Constants.HeroDiameter));
+        super(Bitmaps.Hero);
 
-        _gorlornActivity = gorlornActivity;
-        _speed = ((_gorlornActivity.ScreenWidth + _gorlornActivity.ScreenHeight) / 2.0f) * Constants.HeroSpeed;
+        _gorlorn = gorlorn;
+        _speed = (float) _gorlorn.ScreenWidth * Constants.HeroSpeed;
+        _acceleration = (float) gorlorn.ScreenWidth * Constants.HeroAcceleration;
+        _health = Constants.PlayerHealth;
 
-        X = gorlornActivity.ScreenWidth * .5f;
-        Y = gorlornActivity.getYFromPercent(0.995f - Constants.HeroDiameter);
+        MaxV = _speed;
+        X = gorlorn.ScreenWidth * .5f;
+        Y = gorlorn.getYFromPercent(0.995f - Constants.HeroDiameter);
     }
 
-    public void dealDamage(float damagePercent)
+    public void dealDamage(float damage)
     {
-        _healthPercent = Math.max(0.0f, _healthPercent - damagePercent);
+        //The hero is invincible while recovering from previous damage!
+        if (getIsBlinking())
+            return;
 
-        //TODO: blink and stuff
+        _health -= damage;
 
-        if (_healthPercent <= 0.0f)
+        //Start blinking!
+        startBlinking(Constants.PlayerBlinksOnHitMs);
+
+        if (_health <= 0.001f || Constants.DieInOneHit)
         {
-            //TODO: die!!!
+            _health = 0.0f;
+            _gorlorn.die();
         }
+
+        //Fire a spray of bullets when hit
+        _gorlorn.getBulletManager().fireBulletSpray(X, Y, 6, 0, (float)Math.PI * 1.1f, (float)Math.PI* 1.9f);
     }
 
     /**
@@ -50,44 +67,77 @@ public class Hero extends Entity
      */
     public void restoreHealth()
     {
-        _healthPercent = Math.min(1.0f, _healthPercent + Constants.HeartHealthRestore);
+        _health = Math.min(Constants.PlayerHealth, _health + Constants.HeartHealthRestore);
 
         //TODO: do fancy effect with red particles falling
     }
 
     public float getHealthPercent()
     {
-        return _healthPercent;
+        return _health / Constants.PlayerHealth;
+    }
+
+    @Override
+    public void draw(Canvas canvas)
+    {
+        super.draw(canvas);
     }
 
     @Override
     public boolean update(float dt)
     {
-        if (_gorlornActivity.Hud.isLeftPressed())
+        boolean canMoveAndShoot = !getIsBlinking() || new Date().getTime() > _timeStartedBlinkingMs + Constants.PlayerFrozenOnHitMs;
+
+        //Update movement - the player will have a quick acceleration, but stop instantly
+        if (canMoveAndShoot && _gorlorn.getHud().isLeftPressed())
         {
-            Vx = -_speed;
+            if (_direction == HeroDirection.Right)
+            {
+                Vx = 0;
+            }
+            Ax = -_acceleration;
+            _direction = HeroDirection.Left;
         }
-        else if (_gorlornActivity.Hud.isRightPressed())
+        else if (canMoveAndShoot && _gorlorn.getHud().isRightPressed())
         {
-            Vx = _speed;
+            if (_direction == HeroDirection.Left)
+            {
+                Vx = 0;
+            }
+            Ax = _acceleration;
+            Ax = _acceleration;
+            _direction = HeroDirection.Right;
         }
         else
         {
             Vx = 0.0f;
+            Ax = 0.0f;
+            _direction = HeroDirection.None;
         }
 
         super.update(dt);
 
         //Keep the hero within the game area
-        X = Math.min(Math.max(X, _gorlornActivity.GameArea.left + Width * 0.5f), _gorlornActivity.GameArea.right - (Width * 0.5f));
+        X = Math.min(Math.max(X, Width * 0.5f), _gorlorn.ScreenWidth - (Width * 0.5f));
 
-        long now = new Date().getTime();
-        if (_gorlornActivity.Hud.isFirePressed() && now - _lastShotFiredMs > Constants.MinShotIntervalMs)
+        if (canMoveAndShoot)
         {
-            _lastShotFiredMs = now;
-            _gorlornActivity.BulletManager.FireBullet(X, Y, Math.PI * 1.5);
+            long now = new Date().getTime();
+            if (now - _lastShotFiredMs > Constants.MinShotIntervalMs)
+            {
+                _lastShotFiredMs = now;
+                _gorlorn.getBulletManager().fireBullet(X, Y, Math.PI * 1.5);
+                _gorlorn.getGameStats().shotsFired++;
+            }
         }
 
         return false;
+    }
+
+    private enum HeroDirection
+    {
+        Left,
+        Right,
+        None
     }
 }

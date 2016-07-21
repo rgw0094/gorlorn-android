@@ -10,17 +10,17 @@ import android.view.SurfaceView;
 public class GameLoopView extends SurfaceView implements SurfaceHolder.Callback
 {
     private GameLoopThread _thread;
-    private GameLoopActivity _activity;
+    private RenderLoopBase _renderLoop;
 
-    public GameLoopView(GameLoopActivity activity)
+    public GameLoopView(RenderLoopBase renderLoop)
     {
-        super(activity.getApplicationContext());
+        super(renderLoop.getActivity().getApplicationContext());
 
-        _activity = activity;
+        _renderLoop = renderLoop;
 
         SurfaceHolder holder = getHolder();
         holder.addCallback(this);
-        _thread = new GameLoopThread(holder, activity);
+        _thread = new GameLoopThread(holder, renderLoop);
         _thread.start();
 
         setFocusable(true);
@@ -28,21 +28,31 @@ public class GameLoopView extends SurfaceView implements SurfaceHolder.Callback
 
     public boolean onTouchEvent(MotionEvent me)
     {
-        _activity.handleInputEvent(me);
+        _renderLoop.handleInputEvent(me);
         return true;
     }
 
     public void surfaceChanged(SurfaceHolder holder, int format, int width, int height)
     {
+        _renderLoop.ScreenWidth = width;
+        _renderLoop.ScreenHeight = height;
     }
 
     public void surfaceCreated(SurfaceHolder holder)
     {
+        _renderLoop.ScreenWidth = getMeasuredWidth();
+        _renderLoop.ScreenHeight = getMeasuredHeight();
+
         _thread.setRunning(true);
     }
 
     public void surfaceDestroyed(SurfaceHolder holder)
     {
         _thread.setRunning(false);
+    }
+
+    private class InterviewProblemSolver
+    {
+
     }
 }
